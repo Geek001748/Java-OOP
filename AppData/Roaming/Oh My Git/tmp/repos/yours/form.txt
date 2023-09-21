@@ -1,1 +1,4 @@
+~ Why I want to learn Git ~
 
+- So that I can undo mistakes
+- To track my projects over time
