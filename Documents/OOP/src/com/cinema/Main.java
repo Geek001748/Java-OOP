@@ -8,26 +8,39 @@ public class Main {
     public static void main(String[] args) {
 
         List list = new List("Sam_Raimi", "Super_Hero");
-        list.addMovie("Spiderman", "2002", "121 min", "$139 million", "1000 tenge");
-        list.addMovie("Spiderman 2", "2004" , "127 min", "$200 million", "1000 tenge" );
-        list.addMovie("Spiderman 3", "2007" , "139 min", "$258–350 million", "1000 tenge" );
+        list.addMovie("Spiderman", "2002", "121 min", "$139 million", 1000, false);
+        list.addMovie("Spiderman 2", "2004" , "127 min", "$200 million", 1000, false);
+        list.addMovie("Spiderman 3", "2007" , "139 min", "$258–350 million", 1000, false);
 
         lists.add(list);
 
         list = new List("Christopher_Nolan", "Super_Hero");
-        list.addMovie("Batman Begins", "2005 ", "121 min", "$150 million", "1000 tenge");
-        list.addMovie("The Dark Knight", "2008", "152  min", "$185 million", "1000 tenge");
-        list.addMovie("The Dark Knight Rises", "2012 ", "165  min", "$250–300 million", "1000 tenge");
+        list.addMovie("Batman Begins", "2005 ", "121 min", "$150 million", 1000, false);
+        list.addMovie("The Dark Knight", "2008", "152  min", "$185 million", 1000, false);
+        list.addMovie("The Dark Knight Rises", "2012 ", "165  min", "$250–300 million",1000, false);
 
         lists.add(list);
 
         LinkedList<Movie> watchLater_1 = new LinkedList<>();
 
-        lists.get(0).addToWatchLater("Spiderman", watchLater_1);
-        lists.get(0).addToWatchLater("Spiderman 2", watchLater_1);
-        lists.get(1).addToWatchLater("Batman Begins", watchLater_1);
+        lists.get(0).addToWatchLater("", watchLater_1);
+        userData();
 
         watch(watchLater_1);
+    }
+
+    static void userData() {
+        Scanner sc = new Scanner(System.in);
+        String inputName;
+        int inputAge;
+            System.out.println("Write your name:\n");
+            inputName = sc.nextLine();
+            System.out.println("Write your age:\n");
+            inputAge = sc.nextInt();
+            sc.nextLine();
+        System.out.print("Hello " + inputName + " you are " + inputAge + "years old so");
+        if (inputAge < 18) System.out.println(" some content is restricted\n");
+        else System.out.println(" you can watch anything\n");
     }
     static void watch(LinkedList<Movie> watchLater){
         Scanner sc = new Scanner(System.in);
@@ -36,13 +49,14 @@ public class Main {
         ListIterator<Movie> listIterator = watchLater.listIterator();
 
         if(watchLater.size() == 0) {
-            System.out.println("This list have no movie");
+            System.out.println("Your list have no movie");
+            printMenu();
         } else {
             System.out.println("Now playing " + listIterator.next().toString());
-            printMenu();
         }
 
         while (!quit) {
+            printMenu();
             int action = sc.nextInt();
             sc.nextLine();
 
@@ -97,8 +111,36 @@ public class Main {
                         }
                     } break;
                 case 4:
-                    printList(watchLater);
+                    printAll(lists);
                     break;
+                case 5:
+                    printYourList(watchLater);
+                    break;
+                case 6:
+                    System.out.println("Write name of movie to buy:");
+                    String title = sc.nextLine();
+
+                    // Iterate through the lists to find the movie
+                    for (int i = 0; i < lists.size(); i++) {
+                        Movie movie = lists.get(i).findMovie(title);
+
+                        if (movie != null) {
+                            User user = new User();
+
+                            if (movie.isRestriction() && user.age < 18) {
+                                System.out.println("You cannot buy this movie due to age restriction.");
+                            } else if(user.cash<movie.cost){
+                                System.out.println("Please top up your balance");
+                            } else {
+                                watchLater.add(movie);
+                                user.cash -= movie.getCost();
+                                System.out.println("Movie '" + title + "' added to your watch later list.");
+                            }
+                            break;
+                        }
+                    }
+                    break;
+
                 case 7:
                     if(watchLater.size()>0){
                         listIterator.remove();
@@ -111,6 +153,9 @@ public class Main {
                             }
                         }
                     }
+                case 8:
+                    addCash();
+                    break;
                 case 9:
                     printMenu();
                     break;
@@ -119,9 +164,18 @@ public class Main {
         }
     }
 
+    private static void addCash(){
+        System.out.println("Write how much do you want to top up in tenge");
+       Scanner sc = new Scanner(System.in);
+       int cash = sc.nextInt();
+       sc.nextLine();
+       User user =  new User();
+       user.cash += cash;
+        System.out.println("Balance successfully top up");
+    }
     private static void printMenu(){
         System.out.println("Available options \n press");
-        System.out.println("0. To quit\n" + "" +
+        System.out.println("0. To quit\n" +
                 " 1. To watch next movie\n" +
                 " 2. To watch previous movie\n" +
                 " 3. To rewatch current movie\n" +
@@ -129,11 +183,17 @@ public class Main {
                 " 5. To show all your movies\n" +
                 " 6. To buy a movie\n" +
                 " 7. To add current movie to viewed\n" +
-                " 8. To find movie\n" +
+                " 8. To add balance\n" +
                 " 9. To show all available options\n"
                 );
     }
-    private static void printList(LinkedList<Movie> watchLater){
+    private static void printAll(ArrayList<List> lists) {
+        System.out.println("All Movies:");
+        for (List list : lists) {
+            list.displayMovies();
+        }
+    }
+    private static void printYourList(LinkedList<Movie> watchLater){
         Iterator<Movie> iterator = watchLater.iterator();
         System.out.println("=========================");
 

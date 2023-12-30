@@ -5,13 +5,15 @@ public class Movie {
     String year;
     String duration;
     String budget;
-    String cost;
-    public Movie(String title, String year, String duration, String budget, String cost) {
+    boolean restriction;
+    double cost;
+    public Movie(String title, String year, String duration, String budget, double cost, boolean restriction) {
         this.title = title;
         this.year = year;
         this.duration = duration;
         this.budget = budget;
         this.cost = cost;
+        this.restriction = restriction;
     }
     public Movie(){
         
@@ -28,8 +30,12 @@ public class Movie {
         return budget;
     }
 
-    public String getCost() {
+    public double getCost() {
         return cost;
+    }
+
+    public boolean isRestriction() {
+        return restriction;
     }
 
     @Override

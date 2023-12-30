@@ -26,10 +26,16 @@ public class List {
         }
         return null;
     }
+    public void displayMovies() {
+        for (Movie movie : movies) {
+            System.out.println(movie);
+        }
+        System.out.println("=========================");
+    }
 
-    public boolean addMovie(String title, String year, String duration, String budget, String cost){
+    public boolean addMovie(String title, String year, String duration, String budget, double cost, boolean restriction){
         if(findMovie(title) == null) {
-            movies.add(new Movie(title, year, duration, budget, cost));
+            movies.add(new Movie(title, year, duration, budget, cost, restriction));
             System.out.println(title + " Successfully added to the list");
             return true;
         } else{

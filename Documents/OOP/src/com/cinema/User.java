@@ -3,13 +3,11 @@ package com.cinema;
 import java.util.ArrayList;
 
 public class User {
-    String id;
     String name;
     int age;
     double cash;
     ArrayList<User>films;
-    public User(String id,String name,int age, double cash, ArrayList<User>films) {
-        this.id = id;
+    public User(String name,int age, double cash, ArrayList<User>films) {
         this.name = name;
         this.age = age;
         this.cash = cash;
@@ -18,15 +16,6 @@ public class User {
     public User(){
 
     }
-
-    public String getId() {
-        return id;
-    }
-
-    public void setId(String id) {
-        this.id = id;
-    }
-
     public String getName() {
         return name;
     }
