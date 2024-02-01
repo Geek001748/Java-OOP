@@ -5,42 +5,21 @@ import java.sql.*;
 import java.util.Scanner;
 
 public class Main {
-    private static final String JDBC_URL = "jdbc:postgresql://localhost:5432/postgres";
-    private static final String USERNAME = "postgres";
-    private static final String PASSWORD = "1234";
+
 
     public static void main(String[] args) {
         try {
-            Class.forName("org.postgresql.Driver");
 
-            Connection connection = DriverManager.getConnection(JDBC_URL, USERNAME, PASSWORD);
-
-
-            createUsersTable(connection);
-
-            UserRepository userRepository = new UserRepository(connection);
+            UserRepository userRepository = new UserRepository();
             UserController userController = new UserController(userRepository);
 
+            userRepository.createUsersTable();
             runUserManagementApp(userController);
 
-            connection.close();
-        } catch (ClassNotFoundException | SQLException e) {
+        } catch (SQLException e) {
             e.printStackTrace();
         }
     }
-
-    private static void createUsersTable(Connection connection) throws SQLException {
-        try (Statement statement = connection.createStatement()) {
-            String createTableQuery = "CREATE TABLE IF NOT EXISTS users ("
-                    + "id SERIAL PRIMARY KEY,"
-                    + "username VARCHAR(50) NOT NULL,"
-                    + "age INT NOT NULL,"
-                    + "balance DOUBLE PRECISION NOT NULL)";
-
-            statement.executeUpdate(createTableQuery);
-        }
-    }
-
     private static void runUserManagementApp(UserController userController) {
         Scanner scanner = new Scanner(System.in);
 
@@ -69,13 +48,13 @@ public class Main {
                         userController.getAllUsers();
                         break;
                     case 3:
-                        userController.updateUser();
+                        userController.updateUser(scanner);
                         break;
                     case 4:
-                        userController.deleteUser();
+                        userController.deleteUser(scanner);
                         break;
                     case 5:
-                        userController.getUser();
+                        userController.getUser(scanner);
                         break;
                     case 0:
                         System.out.println("Exiting the application. Goodbye!");
@@ -86,12 +65,8 @@ public class Main {
                         System.out.println("Invalid choice. Please enter a valid option.");
                 }
             }
+        } catch (Exception e) {
+            throw new RuntimeException("Something went wrong" + e);
         }
-            catch (Exception e) {
-                System.err.println("An unexpected error occurred: " + e.getMessage());
-                e.printStackTrace();  // Print the complete stack trace for debugging
-                st = false;  // Set st to false to exit the loop
-        }
-
     }
 }

@@ -12,75 +12,50 @@ public class UserController {
         this.userRepository = userRepository;
     }
 
-    public void addUser(Scanner scanner) {
+    public void addUser(Scanner scanner) throws SQLException{
         System.out.print("Enter username: ");
         String username = scanner.nextLine();
 
         System.out.print("Enter age: ");
-        int age = scanner.nextInt();
+        int age = Integer.parseInt(scanner.nextLine());
 
         System.out.print("Enter balance: ");
-        double balance = scanner.nextDouble();
+        double balance = Double.parseDouble(scanner.nextLine());
 
-        User newUser = new User();
-        newUser.setUsername(username);
-        newUser.setAge(age);
-        newUser.setBalance(balance);
-
-        userRepository.addUser(newUser);
+        userRepository.addUser(new User(username, age, balance));
     }
-    public void updateUser() {
-        try (Scanner scanner = new Scanner(System.in)) {
+    public void updateUser(Scanner scanner) throws SQLException{
             System.out.println("Enter the id to update");
-            int id = scanner.nextInt();
-            scanner.nextLine();
+            int id = Integer.parseInt(scanner.nextLine());
+            if(userRepository.getUser(id)) {
+                System.out.println("Enter the surname to update");
+                String username = scanner.nextLine();
 
-            System.out.println("Enter the surname to update");
-            String username = scanner.nextLine();
+                System.out.println("Enter the age to update");
+                int age = Integer.parseInt(scanner.nextLine());
 
-            System.out.println("Enter the age to update");
-            int age = scanner.nextInt();
+                System.out.println("Enter the balance to update");
+                double balance = Double.parseDouble(scanner.nextLine());
 
-            System.out.println("Enter the balance to update");
-            double balance = scanner.nextDouble();
-
-            userRepository.updateUser(id, username, age, balance);
-
-        } catch (SQLException e) {
-            System.err.println("SQLException: " + e.getMessage());
-        } catch (Exception e) {
-            System.err.println("Unexpected error: " + e.getMessage());
-        }
-    }
-    public void deleteUser() {
-        try (Scanner scanner = new Scanner(System.in)) {
-            System.out.println("Enter the id to delete");
-            try {
-                int id = Integer.parseInt(scanner.nextLine());
-                userRepository.deleteUser(id);
-            } catch (NumberFormatException e) {
-                System.err.println("Invalid input: " + e.getMessage());
-            } catch (SQLException e) {
-                System.err.println("SQLException: " + e.getMessage());
-            } catch (Exception e) {
-                System.err.println("Unexpected error: " + e.getMessage());
+                userRepository.updateUser(new User(id, username, age, balance));
             }
-
-        }
     }
-     public void getUser(){
+    public void deleteUser(Scanner scanner) throws SQLException{
+                System.out.println("Enter the id to delete");
+                int id = Integer.parseInt(scanner.nextLine());
+                if(userRepository.getUser(id)) {
+                    userRepository.deleteUser(id);
+                }
+    }
+     public void getUser(Scanner scanner) throws SQLException{
         Scanner sc = new Scanner(System.in);
         System.out.println("Enter id of username");
         int id = sc.nextInt();
-
-        User user = userRepository.getUser(id);
-         System.out.println("Username: "+user.getUsername());
-         System.out.println("Age: "+user.getAge());
-         System.out.println("Balance: "+user.getBalance());
+        userRepository.getUser(id);
      }
 
 
-    public void getAllUsers() {
+    public void getAllUsers() throws SQLException{
         userRepository.getAllUsers();
     }
 }

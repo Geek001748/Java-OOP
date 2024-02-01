@@ -17,6 +17,11 @@ public class User {
         this.age = age;
         this.balance = balance;
     }
+    public User(String username, int age, double balance) {
+        this.username = username;
+        this.age = age;
+        this.balance = balance;
+    }
     public int getId() {
         return id;
     }
