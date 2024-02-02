@@ -27,7 +27,7 @@ public class UserRepository {
                 return DriverManager.getConnection(JDBC_URL, USERNAME, PASSWORD);
     }
         public void createUsersTable() throws SQLException {
-        try (Statement statement = connection.createStatement()) {
+        try (Statement statement = getConnection().createStatement()) {
             String createTableQuery = Queries.createUsersTable();
 
             statement.executeUpdate(createTableQuery);
@@ -82,7 +82,7 @@ public class UserRepository {
     }
     public void deleteUser (int id) throws  SQLException{
         try (Statement statement = getConnection().createStatement();){
-            int rowsAffected = statement.executeUpdate(Queries.updateUser(id));
+            int rowsAffected = statement.executeUpdate(Queries.deleteUser(id));
             if (rowsAffected > 0) {
                 System.out.println("Deleted successfully");
             } else {

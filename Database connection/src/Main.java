@@ -16,15 +16,14 @@ public class Main {
             userRepository.createUsersTable();
             runUserManagementApp(userController);
 
-        } catch (SQLException e) {
-            e.printStackTrace();
+        } catch (Exception e) {
+            throw new RuntimeException("Something went wrong." + e);
         }
     }
-    private static void runUserManagementApp(UserController userController) {
+    private static void runUserManagementApp (UserController userController) throws SQLException{
         Scanner scanner = new Scanner(System.in);
 
         boolean st=true;
-        try{
             while (st) {
                 System.out.println("1. Add User");
                 System.out.println("2. Get All Users");
@@ -65,8 +64,5 @@ public class Main {
                         System.out.println("Invalid choice. Please enter a valid option.");
                 }
             }
-        } catch (Exception e) {
-            throw new RuntimeException("Something went wrong" + e);
         }
-    }
 }
