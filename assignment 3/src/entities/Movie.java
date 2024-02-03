@@ -10,6 +10,10 @@ public class Movie {
         this.movieName = movieName;
         this.price = price;
     }
+    public Movie(int movieId, double price) {
+        this.MovieId = movieId;
+        this.price = price;
+    }
     public Movie(String movieName, double price) {
         this.movieName = movieName;
         this.price = price;

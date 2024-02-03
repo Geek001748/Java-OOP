@@ -16,9 +16,12 @@ public class Ticket extends Movie {
         this.time = time;
         this.ticketId = ticketId;
     }
-    public Ticket(String movieName, double price, String time) {
-        super(movieName,price);
+    public Ticket(int movieId, double price, String time) {
+        super(movieId,price);
         this.time = time;
+    }
+    public Ticket(int movieId, double price) {
+        super(movieId,price);
     }
     public String getTime() {
         return time;
@@ -35,12 +38,6 @@ public class Ticket extends Movie {
     public void setTicketId(int ticketId) {
         this.ticketId = ticketId;
     }
-//    public String isCorrectTime(String time){
-//        for (char c: time){
-//            if (c!=)
-//        }
-//    }
-
     @Override
     public String toString() {
         return  "Movie name: " + getMovieName() + "\nPrice : " + getPrice()+ "\nTime: " + getTime();

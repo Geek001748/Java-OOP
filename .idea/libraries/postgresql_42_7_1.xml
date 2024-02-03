@@ -1,7 +1,11 @@
 <component name="libraryTable">
   <library name="postgresql-42.7.1">
     <CLASSES>
+<<<<<<< Updated upstream
       <root url="jar://$PROJECT_DIR$/assignment 3/src/postgresql-42.7.1.jar!/" />
+=======
+      <root url="jar://$PROJECT_DIR$/../../postgresql-42.7.1.jar!/" />
+>>>>>>> Stashed changes
     </CLASSES>
     <JAVADOC />
     <SOURCES />
