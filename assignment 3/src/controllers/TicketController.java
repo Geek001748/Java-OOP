@@ -1,30 +1,28 @@
 package controllers;
 
-import entities.Movie;
 import entities.Ticket;
 import entities.User;
-import repositories.Repositories;
+import repositories.TicketTable;
 
-import java.sql.Array;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Scanner;
 
 public class TicketController {
-    private Repositories ticketRepository;
+    private TicketTable ticketRepository;
+    private MovieController movieRepository;
     private ArrayList <Ticket>  ticketArrayList = new ArrayList <>();
 
-    public TicketController(Repositories userRepository) {
+    public TicketController(TicketTable userRepository) {
         this.ticketRepository = userRepository;
     }
     public void addTicketToUser(Scanner scanner) throws SQLException {
         System.out.println("Please write id of user to add ticket");
         int userId = Integer.parseInt(scanner.nextLine());
-        if (ticketRepository.getUser(userId)) {
-            User user = ticketRepository.getUserClass(userId);
+        if (ticketRepository.getObjectFromTable(userId)) {
+            User user = (User)ticketRepository.getObjectClass(userId);
             System.out.println("Please write name of movie to add ticket");
-            String movieName = scanner.nextLine();
-            if (ticketRepository.getMovieByName(movieName)) {
+            if (movieRepository.getMovieByName(scanner)) {
                 System.out.print("Enter movie time xx:xx");
                 String time = scanner.nextLine();
                 ticketRepository.ticketAmount(user);
@@ -42,11 +40,6 @@ public class TicketController {
                 ticketRepository.addTicket(userId, new Ticket(movieName, ticketRepository.getMovieClass(id), time));
             }
     }
-
-
-
-
-
 }
 printMovieTimes(){
     System.out.println("1. 8:00 - 10:00");
