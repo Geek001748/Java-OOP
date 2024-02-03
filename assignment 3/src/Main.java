@@ -1,10 +1,6 @@
-import controllers.MovieController;
 import controllers.TicketController;
 import controllers.UserController;
-import repositories.MovieTable;
-import repositories.SQLConnection;
-import repositories.TicketTable;
-import repositories.UserTable;
+import repositories.Repositories;
 
 import java.sql.SQLException;
 import java.util.Scanner;
@@ -13,18 +9,14 @@ public class Main {
 
     public static void main(String[] args) {
         try {
-            UserTable userTable = new UserTable();
-            MovieTable movieTable = new MovieTable();
-            TicketTable ticketTable = new TicketTable();
+            Repositories repositories = new Repositories();
 
-            UserController userController = new UserController(userTable);
-            TicketController ticketController = new TicketController(ticketTable);
-            MovieController movieController = new MovieController(movieTable);
+            UserController userController = new UserController(repositories);
+            TicketController ticketController = new TicketController(repositories);
             Scanner scanner = new Scanner(System.in);
-
-            userTable.createTable();
-            movieTable.createTable();
-            ticketTable.createTable();
+            repositories.createUsersTable();
+            repositories.createMoviesTable();
+            repositories.createTicketsTable();
 
             runCinemaApp(scanner);
         } catch (Exception e) {
