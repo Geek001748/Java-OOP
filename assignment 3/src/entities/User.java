@@ -1,8 +1,11 @@
 package entities;
 
 import entities.Ticket;
+import repositories.Repositories;
 
+import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Scanner;
 
 public class User {
     private int id;
@@ -10,9 +13,34 @@ public class User {
     private int age = 0;
     private double balance =0.0;
     private ArrayList<Ticket> userTickets = new ArrayList<>();
-    private int ticketAmount = 0;
     public User(Ticket ticket){
         userTickets.add(ticket);
+    }
+    Repositories repositories;
+
+    public void addToUser(User user,Ticket ticket) throws SQLException {
+        Scanner scanner = new Scanner(System.in);
+        System.out.println("How many tickets you want to buy ? We have " +repositories.getTicketAmountForAll(ticket.getTicketId()) +" tickets.");
+        int n = scanner.nextInt();
+
+        if (n<=repositories.getTicketAmountForAll(ticket.getTicketId())){
+            for (int i =1; i<=n;i++){
+                if(user.getBalance()>=ticket.getPrice()) {
+                    getUserTickets().add(ticket);
+                    user.setBalance(user.getBalance()-ticket.getPrice());
+                }
+                else {
+                    System.out.println("You have not got enough money. Please, top up your balance.");
+                    System.out.println("Your current balance: "+user.getBalance());
+                    System.out.println("Ticket price: " + ticket.getPrice());
+                    break;
+                }
+            }
+
+        } else{
+            System.out.println("We do not have so many tickets. Enter valid number");
+        }
+
     }
 
     public void getAllUserTickets() {
@@ -25,7 +53,6 @@ public class User {
     }
 
     public int getTicketArraySize(){
-        this.ticketAmount = getUserTickets().size();
         return getUserTickets().size();
     }
     public User() {
@@ -34,21 +61,6 @@ public class User {
         this.age = age;
         this.balance = balance;
         this.userTickets = userTickets;
-    }
-
-    public User(int id, String username, int age, double balance, ArrayList userTickets) {
-        this.id = id;
-        this.username = username;
-        this.age = age;
-        this.balance = balance;
-        this.userTickets = userTickets;
-    }
-     public User(int id, String username, int age, double balance, int ticketAmount) {
-        this.id = id;
-        this.username = username;
-        this.age = age;
-        this.balance = balance;
-        this.ticketAmount = ticketAmount;
     }
     public User(int id, String username, int age, double balance) {
         this.id = id;

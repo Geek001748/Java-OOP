@@ -13,6 +13,26 @@ import java.util.Scanner;
 public class TicketController {
     private Repositories ticketRepository;
     private ArrayList <Ticket>  ticketArrayList = new ArrayList <>();
+    public boolean isCorrectTime(String time){
+        try {
+            if (time.length() > 5) {
+                System.out.println("Too many words");
+                return false;
+            }
+            if (time.charAt(2) != '-') {
+                System.out.println("Don't forget about '-'");
+                return false;
+            }
+            int hours = Integer.parseInt(time.substring(0, 2));
+            int minutes = Integer.parseInt(time.substring(3));
+            if (hours < 0 && hours > 23 ||minutes<0||minutes > 59) {
+                System.out.println("Wrong Input");
+            }
+        }catch (NumberFormatException e){
+            return false;
+        }
+        return true;
+    }
 
     public TicketController(Repositories userRepository) {
         this.ticketRepository = userRepository;
@@ -27,32 +47,11 @@ public class TicketController {
             if (ticketRepository.getMovieByName(movieName)) {
                 System.out.print("Enter movie time xx:xx");
                 String time = scanner.nextLine();
-                ticketRepository.ticketAmount(user);
-                ticketRepository.addTicket(userId, new Ticket(movieName, ticketRepository.getMovieClass(id), time));
+                if(isCorrectTime(time) && ticketRepository.getMovieByTime(time)) {
+                    user.addToUser(user,new Ticket(movieName, ticketRepository.getMoviePrice(movieName), time));
+                    ticketRepository.ticketAmount(user);
+                }
             }
         }
     }
-    public void addTicket(Scanner scanner) throws SQLException {
-        System.out.println("Please write name of movie to create ticket");
-            String movieName = scanner.nextLine();
-            if (ticketRepository.getMovieByName(movieName)) {
-                System.out.print("Enter movie time xx:xx");
-                String time = scanner.nextLine();
-                ticketRepository.ticketAmount(user);
-                ticketRepository.addTicket(userId, new Ticket(movieName, ticketRepository.getMovieClass(id), time));
-            }
-    }
-
-
-
-
-
 }
-printMovieTimes(){
-    System.out.println("1. 8:00 - 10:00");
-    System.out.println("2. 6");
-    System.out.println("3.");
-    System.out.println("4.");
-    System.out.println("5.");
-}
-switch(choice)
