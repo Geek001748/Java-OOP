@@ -81,6 +81,17 @@ public class Repositories {
             }
             return isFound;
         }
+        public int getUserTicketAmount(User user) throws SQLException {
+           try (Statement statement = getConnection().createStatement();ResultSet resultSet = statement.executeQuery(Queries.getUserTicketAmount(user.getId()));) {
+                if (resultSet.next()) {
+                    return resultSet.getInt("ticket_amount");
+                }else{
+                    System.out.println("User wasn't found!");
+                }
+            }
+            return 0;
+        }
+
         public User getUserClass(int id) throws SQLException{
             try (Statement statement = getConnection().createStatement();ResultSet resultSet = statement.executeQuery(Queries.getUser(id));) {
                 if (resultSet.next()) {
@@ -102,11 +113,17 @@ public class Repositories {
             return null;
         }
         public Movie getMovieClassByName(String name) throws SQLException{
-            try (Statement statement = getConnection().createStatement();ResultSet resultSet = statement.executeQuery(Queries.getMovieByName(name));) {
-                if (resultSet.next()) {
+         boolean isFound = false;
+            try (PreparedStatement preparedStatement = getConnection().prepareStatement(Queries.getMovieByName());ResultSet resultSet = preparedStatement.executeQuery()) {
+                preparedStatement.setString(1, name);
+
+                int rowsAffected = preparedStatement.executeUpdate();
+
+                if (rowsAffected > 0) {
+                    System.out.println("Movie found successfully!");
                     return new Movie(resultSet.getInt("movie_id"),resultSet.getString("movie_name"),resultSet.getDouble("price"));
-                }else{
-                    System.out.println("Movie wasn't found!");
+                } else {
+                    System.out.println("Failed to add movie. Please try again.");
                 }
             }
             return null;
@@ -168,38 +185,31 @@ public class Repositories {
             System.out.println("   Price:   " + movie.getPrice());
         }
 
-         public void ticketInfo(Ticket ticket){
+         public void ticketInfo(Ticket ticket) throws SQLException{
             System.out.println("Ticket ID:  " + ticket.getMovieId());
             System.out.println("Ticket Movie name: " + ticket.getMovieName());
             System.out.println("   Price:   " + ticket.getPrice());
-            System.out.println("   Time:   " + ticket.getPrice());
-            System.out.println("   Amount:   " + ticket.getTicketAmount());
+            System.out.println("   Time:   " + ticket.getTime());
+            System.out.println("   Amount:   " + getTicketAmountForAll(ticket.getTime()));
         }
-        public void ticketAmount(User user) throws SQLException {
+        public void timeInfo(String time){
+            System.out.println(time);
+        }
+        public void ticketAmount(User user, int n) throws SQLException , NumberFormatException{
         try (PreparedStatement preparedStatement = getConnection().prepareStatement(Queries.updateTicketAmount(user.getId()));) {
-                preparedStatement.setInt(1, user.getTicketArraySize());
+                preparedStatement.setInt(1, getUserTicketAmount(user)+n);
                 int rowsAffected = preparedStatement.executeUpdate();
                 if(rowsAffected > 0) {
                     System.out.println("Ticket amount changed successfully!");
-
                 } else {
                     System.out.println("Failed to change ticket amount.");
                 }
             }
         }
-        public int getTicketAmountForAll(int id) throws SQLException{
-            try (Statement statement = getConnection().createStatement();ResultSet resultSet = statement.executeQuery(Queries.getTicketAmountForAll(id));) {
-                if (resultSet.next()) {
-                    return resultSet.getInt("ticketAmount");
-                }else{
-                    System.out.println("Ticket wasn't found!");
-                }
-            }
-            return 0;
-        }
-        public void updateTicketAmountForAll(int id,int toBuy) throws SQLException {
-                try (PreparedStatement preparedStatement = getConnection().prepareStatement(Queries.updateTicketAmountForAll(id));) {
-                        preparedStatement.setInt(1, getTicketAmountForAll(id)-toBuy);
+        public void updateTicketAmountForAll(String time,int toBuy) throws SQLException {
+                try (PreparedStatement preparedStatement = getConnection().prepareStatement(Queries.updateTicketAmountForAll(time));) {
+                    int n = getTicketAmountForAll(time);
+                    preparedStatement.setInt(1, n - toBuy);
                         int rowsAffected = preparedStatement.executeUpdate();
                         if (rowsAffected > 0) {
                             System.out.println("Ticket amount changed successfully!");
@@ -239,7 +249,21 @@ public class Repositories {
             try (Statement statement = getConnection().createStatement(); ResultSet resultSet = statement.executeQuery(Queries.getAllTickets());) {
                 while (resultSet.next()) {
                     System.out.println();
-                    ticketInfo(new Ticket(resultSet.getInt("ticket_id"),resultSet.getString("movie_name"),resultSet.getDouble("balance"),resultSet.getString("time")));
+                    ticketInfo(new Ticket(resultSet.getInt("ticket_id"),resultSet.getString("movie_name"),resultSet.getDouble("price"),resultSet.getString("time")));
+                }
+            }
+        }
+        public void getAllTimes(String movieName) throws SQLException {
+            try (PreparedStatement preparedStatement = getConnection().prepareStatement(Queries.getAllTimes(movieName));) {
+                preparedStatement.setString(1, movieName);
+                ResultSet resultSet = preparedStatement.executeQuery();
+                if (resultSet.next()) { // Check if any rows exist
+                     System.out.println("All times for '" + movieName + "':");
+                     do { // Process all rows
+                         timeInfo(resultSet.getString("time"));
+                     } while (resultSet.next());
+                } else {
+                    System.out.println("No times found for the movie.");
                 }
             }
         }
@@ -281,12 +305,44 @@ public class Repositories {
 
         public boolean getMovieByName(String name) throws SQLException{
             boolean isFound = false;
-            try (Statement statement = getConnection().createStatement();ResultSet resultSet = statement.executeQuery(Queries.getMovieByName(name));) {
-                if (resultSet.next()) {
+            try (PreparedStatement preparedStatement = getConnection().prepareStatement(Queries.getMovieByName());) {
+                preparedStatement.setString(1, name);
+                ResultSet resultSet = preparedStatement.executeQuery();
+
+                if (resultSet.next()) { // Check if any rows were found
+                    System.out.println("Movie found successfully!");
+                    movieInfo(new Movie(resultSet.getInt("movie_id"), resultSet.getString("movie_name"), resultSet.getDouble("price")));
                     isFound = true;
-                    movieInfo(new Movie(resultSet.getInt("movie_id"),resultSet.getString("movie_name"),resultSet.getDouble("price")));
-                }else{
-                    System.out.println("Movie wasn't found!");
+                } else {
+                    System.out.println("Movie not found.");
+                }
+            }
+            return isFound;
+        }
+        public int getTicketAmountForAll(String time) throws SQLException{
+            try (PreparedStatement preparedStatement = getConnection().prepareStatement(Queries.getMovieByTime());) {
+                preparedStatement.setString(1, time);
+                ResultSet resultSet = preparedStatement.executeQuery();
+
+                if (resultSet.next()) { // Check if any rows were found
+                    return resultSet.getInt("ticket_amount");
+                } else {
+                    System.out.println("Movie not found.");
+                }
+            }
+            return 0;
+        }
+        public boolean getMovieByTime(String time) throws SQLException{
+            boolean isFound = false;
+            try (PreparedStatement preparedStatement = getConnection().prepareStatement(Queries.getMovieByTime());) {
+                preparedStatement.setString(1, time);
+                ResultSet resultSet = preparedStatement.executeQuery();
+                if (resultSet.next()) { // Check if any rows were found
+                    System.out.println("Time found successfully!");
+                    ticketInfo(new Ticket(resultSet.getInt("ticket_id"),resultSet.getString("movie_name"),resultSet.getDouble("price"),resultSet.getString("time")));
+                    isFound = true;
+                } else {
+                    System.out.println("Movie not found.");
                 }
             }
             return isFound;
@@ -314,19 +370,6 @@ public class Repositories {
                 }
             }
         }
-         public boolean getMovieByTime(String time) throws SQLException{
-            boolean isFound = false;
-            try (Statement statement = getConnection().createStatement();ResultSet resultSet = statement.executeQuery(Queries.getMovieByTime(time));) {
-                if (resultSet.next()) {
-                    isFound = true;
-                    movieInfo(new Movie(resultSet.getInt("movie_id"),resultSet.getString("movie_name"),resultSet.getDouble("price")));
-                }else{
-                    System.out.println("There is not any movie at this time!");
-                }
-            }
-            return isFound;
-        }
-
         public void getAllMovies() throws SQLException {
             try (Statement statement = getConnection().createStatement(); ResultSet resultSet = statement.executeQuery(Queries.getAllMovies());) {
                 while (resultSet.next()) {
@@ -337,11 +380,11 @@ public class Repositories {
         }
 
          public double getMoviePrice (String name) throws SQLException{
-            try (Statement statement = getConnection().createStatement();ResultSet resultSet = statement.executeQuery(Queries.getMoviePrice(name));) {
-                if (resultSet.next()) {
-                    Movie movie = new Movie(resultSet.getInt("movie_id"),resultSet.getString("movie_name"),resultSet.getDouble("price"));
-                    movieInfo(new Movie(resultSet.getInt("movie_id"),resultSet.getString("movie_name"),resultSet.getDouble("price")));
-                    return movie.getPrice();
+            try (PreparedStatement preparedStatement = getConnection().prepareStatement(Queries.getMoviePrice());) {
+                preparedStatement.setString(1, name);
+                ResultSet resultSet = preparedStatement.executeQuery();
+                if (resultSet.next()) { // Check if any rows were found
+                    return resultSet.getDouble("price");
                 }else{
                     System.out.println("Movie wasn't found!");
                 }

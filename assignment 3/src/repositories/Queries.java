@@ -60,10 +60,13 @@ public class Queries {
           return "SELECT * FROM tickets WHERE ticket_id = "+ticket_id;
     }
     public static String  updateTicketAmount(int id){
-          return "UPDATE users SET ticket_amount = ?,  WHERE user_id = " +id;
+          return "UPDATE users SET ticket_amount = ? WHERE user_id = " +id;
     }
-    public static String  updateTicketAmountForAll(int id){
-          return "UPDATE tickets SET ticket_amount = ?,  WHERE ticket_id = " +id;
+    public static String  getUserTicketAmount(int id){
+          return "SELECT ticket_amount FROM users WHERE user_id = " +id;
+    }
+    public static String  updateTicketAmountForAll(String time){
+          return "UPDATE tickets SET ticket_amount = ? WHERE time LIKE " + time;
     }
     public static String  getTicketAmountForAll(int id){
           return "SELECT ticket_amount FROM tickets WHERE ticket_id = " +id;
@@ -75,11 +78,11 @@ public class Queries {
           return "SELECT * FROM movies WHERE movie_id = "+id;
     }
 
-    public static String  getMovieByName(String name ){
-          return "SELECT * FROM movies WHERE movie_name = "+name;
+    public static String  getMovieByName(){
+          return "SELECT * FROM movies WHERE movie_name LIKE ?";
     }
-    public static String  getMovieByTime(String time ){
-          return "SELECT * FROM movies WHERE time = "+time;
+    public static String  getMovieByTime(){
+          return "SELECT * FROM tickets WHERE time LIKE ?";
     }
 
     public static String  updateMovie(int id){
@@ -92,8 +95,11 @@ public class Queries {
      public static String  getAllMovies(){
           return "SELECT * FROM movies";
     }
+     public static String  getAllTimes(String movieName){
+          return "SELECT time FROM tickets WHERE movie_name LIKE ?";
+    }
 
-    public static String getMoviePrice (String name) {
-        return "SELECT price FROM movies WHERE movie_name = " +name;
+    public static String getMoviePrice () {
+        return "SELECT price FROM tickets WHERE movie_name LIKE ?";
     }
 }

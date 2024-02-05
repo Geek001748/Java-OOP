@@ -56,7 +56,7 @@ public class MovieController {
                 do {
                     time = scanner.nextLine();
                     if(isCorrectTime(time)){
-                        movieRepository.addTicketToTable(new Ticket(movieName,price,time,ticketAmount));
+                        movieRepository.addTicketToTable(new Ticket(movieName.toLowerCase(),price,time,ticketAmount));
                         break;
                     }
                 } while(true);

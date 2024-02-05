@@ -18,6 +18,9 @@ public class Movie {
         this.movieName = movieName;
         this.price = price;
     }
+    public Movie(double price) {
+        this.price = price;
+    }
     public Movie(){
         System.out.println("Name of movie: " + getMovieName());
         System.out.println("Price of movie: " + getPrice());

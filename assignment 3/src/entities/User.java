@@ -16,33 +16,6 @@ public class User {
     public User(Ticket ticket){
         userTickets.add(ticket);
     }
-    Repositories repositories;
-
-    public void addToUser(User user,Ticket ticket) throws SQLException {
-        Scanner scanner = new Scanner(System.in);
-        System.out.println("How many tickets you want to buy ? We have " +repositories.getTicketAmountForAll(ticket.getTicketId()) +" tickets.");
-        int n = scanner.nextInt();
-
-        if (n<=repositories.getTicketAmountForAll(ticket.getTicketId())){
-            for (int i =1; i<=n;i++){
-                if(user.getBalance()>=ticket.getPrice()) {
-                    getUserTickets().add(ticket);
-                    user.setBalance(user.getBalance()-ticket.getPrice());
-                }
-                else {
-                    System.out.println("You have not got enough money. Please, top up your balance.");
-                    System.out.println("Your current balance: "+user.getBalance());
-                    System.out.println("Ticket price: " + ticket.getPrice());
-                    break;
-                }
-            }
-
-        } else{
-            System.out.println("We do not have so many tickets. Enter valid number");
-        }
-
-    }
-
     public void getAllUserTickets() {
         for (Ticket ticket: userTickets){
             System.out.println(ticket.toString());

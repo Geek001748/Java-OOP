@@ -18,7 +18,7 @@ public class Main {
     }
 
 
-    private static void runCinemaApp(Scanner scanner) throws SQLException {
+    private static void runCinemaApp(Scanner scanner) throws SQLException, NumberFormatException {
         Repositories repositories = new Repositories();
         UserController userController = new UserController(repositories);
         MovieController movieController = new MovieController(repositories);
@@ -136,7 +136,7 @@ public class Main {
         System.out.println("1.Add ticket to user");
     }
 
-    static public void switchCaseForTickets(Scanner scanner, TicketController ticketController) throws  SQLException {
+    static public void switchCaseForTickets(Scanner scanner, TicketController ticketController) throws  SQLException, NumberFormatException {
         printMenuForTicketOptions();
         int choice = Integer.parseInt(scanner.nextLine());
 

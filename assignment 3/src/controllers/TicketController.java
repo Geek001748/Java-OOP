@@ -37,19 +37,45 @@ public class TicketController {
     public TicketController(Repositories userRepository) {
         this.ticketRepository = userRepository;
     }
-    public void addTicketToUser(Scanner scanner) throws SQLException {
+    public void addTicketToUser(Scanner scanner) throws SQLException, NumberFormatException {
         System.out.println("Please write id of user to add ticket");
         int userId = Integer.parseInt(scanner.nextLine());
         if (ticketRepository.getUser(userId)) {
             User user = ticketRepository.getUserClass(userId);
             System.out.println("Please write name of movie to add ticket");
             String movieName = scanner.nextLine();
-            if (ticketRepository.getMovieByName(movieName)) {
+            if (ticketRepository.getMovieByName(movieName.toLowerCase())) {
+                ticketRepository.getAllTimes(movieName.toLowerCase());
                 System.out.println("Enter movie time (xx:xx):");
-                String time = scanner.nextLine();
-                if(isCorrectTime(time) && ticketRepository.getMovieByTime(time)) {
-                    user.addToUser(user,new Ticket(movieName, ticketRepository.getMoviePrice(movieName), time));
-                    ticketRepository.ticketAmount(user);
+                String time;
+                do {
+                    time = scanner.nextLine();
+                    if(isCorrectTime(time)){
+                        break;
+                    }
+                } while(true);
+                if(ticketRepository.getMovieByTime(time)) {
+                    Ticket ticket = new Ticket(movieName, ticketRepository.getMoviePrice(movieName.toLowerCase()), time);
+                    System.out.println("How many tickets you want to buy ? We have " +ticketRepository.getTicketAmountForAll(ticket.getTime()) +" tickets.");
+                    int n = scanner.nextInt();
+
+                    if (n<=ticketRepository.getTicketAmountForAll(ticket.getTime())){
+                        if(user.getBalance()>=ticket.getPrice() * n) {
+                            for (int i = 0; i < n; i++) {
+                                user.getUserTickets().add(ticket);
+                            }
+                            user.setBalance(user.getBalance()-ticket.getPrice() * n);
+                            ticketRepository.ticketAmount(user,n);
+                            ticketRepository.updateTicketAmountForAll(ticket.getTime(),n);
+                        }
+                        else {
+                            System.out.println("You have not got enough money. Please, top up your balance.");
+                            System.out.println("Your current balance: "+user.getBalance());
+                            System.out.println("Ticket price: " + ticket.getPrice());
+                        }
+                    } else{
+                        System.out.println("We do not have so many tickets. Enter valid number");
+                    }
                 }
             }
         }

@@ -3,7 +3,7 @@ package entities;
 import java.util.Scanner;
 
 public class Ticket extends Movie {
-    private String time;
+    private String time = "";
     private int ticketId;
     private int ticketAmount = 0;
 
@@ -11,6 +11,9 @@ public class Ticket extends Movie {
         super(getMovieId, movieName, price);
         this.time = time;
         this.ticketId = ticketId;
+    }
+    public Ticket(String time) {
+        this.time = time;
     }
      public Ticket(int ticketId,String movieName, double price, String time) {
         super(movieName,price);
