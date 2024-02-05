@@ -45,7 +45,7 @@ public class TicketController {
             System.out.println("Please write name of movie to add ticket");
             String movieName = scanner.nextLine();
             if (ticketRepository.getMovieByName(movieName)) {
-                System.out.print("Enter movie time xx:xx");
+                System.out.println("Enter movie time (xx:xx):");
                 String time = scanner.nextLine();
                 if(isCorrectTime(time) && ticketRepository.getMovieByTime(time)) {
                     user.addToUser(user,new Ticket(movieName, ticketRepository.getMoviePrice(movieName), time));

@@ -13,6 +13,26 @@ public class MovieController {
     public MovieController(Repositories userRepository) {
         this.movieRepository = userRepository;
     }
+    public boolean isCorrectTime(String time){
+        try {
+            if (time.length() > 5) {
+                System.out.println("Too many words");
+                return false;
+            }
+            if (time.charAt(2) != '-') {
+                System.out.println("Don't forget about '-'");
+                return false;
+            }
+            int hours = Integer.parseInt(time.substring(0, 2));
+            int minutes = Integer.parseInt(time.substring(3));
+            if (hours < 0 && hours > 23 ||minutes<0||minutes > 59) {
+                System.out.println("Wrong Input");
+            }
+        }catch (NumberFormatException e){
+            return false;
+        }
+        return true;
+    }
 
     public void addMovie(Scanner scanner) throws SQLException {
             System.out.print("Enter movie name: ");
@@ -20,7 +40,8 @@ public class MovieController {
             System.out.print("Enter price: ");
             double price = Double.parseDouble(scanner.nextLine());
             movieRepository.addMovie(new Movie(movieName, price));
-            System.out.println("How many tickets you want to add?");
+
+            System.out.println("How many tickets you want to add?(0-100)");
             int ticketAmount;
             do {
                     ticketAmount = Integer.parseInt(scanner.nextLine());
@@ -29,16 +50,16 @@ public class MovieController {
                     }
                 System.out.println("You have written incorrect number. (0-100)");
             } while(true);
-            System.out.print("Enter movie time xx:xx");
+            System.out.println("Enter movie time (xx:xx)");
                 String time;
 
                 do {
                     time = scanner.nextLine();
-                    if(ticketController.isCorrectTime(time)){
+                    if(isCorrectTime(time)){
                         movieRepository.addTicketToTable(new Ticket(movieName,price,time,ticketAmount));
+                        break;
                     }
-
-                } while(!ticketController.isCorrectTime(time));
+                } while(true);
 
     }
     public void updateMovie(Scanner scanner) throws SQLException{

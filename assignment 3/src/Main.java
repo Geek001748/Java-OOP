@@ -59,8 +59,9 @@ public class Main {
     static public void printMenuForAdmin() {
         System.out.println("0.Exit");
         System.out.println("1.Show all users options");
-        System.out.println("2.Show all tickets options");
-        System.out.println("3.Show all movies options");
+        System.out.println("2.Show all movies options");
+        System.out.println("3.Show all tickets options");
+
     }
 
     public static void printMenuForUsersOptions() {
@@ -108,6 +109,7 @@ public class Main {
     }
 
     static public void swichCaseForMovies(Scanner scanner, MovieController movieController) throws SQLException {
+        printMenuForMovieOptions();
         int choice = Integer.parseInt(scanner.nextLine());
 
         switch (choice) {
@@ -135,6 +137,7 @@ public class Main {
     }
 
     static public void switchCaseForTickets(Scanner scanner, TicketController ticketController) throws  SQLException {
+        printMenuForTicketOptions();
         int choice = Integer.parseInt(scanner.nextLine());
 
         switch (choice) {

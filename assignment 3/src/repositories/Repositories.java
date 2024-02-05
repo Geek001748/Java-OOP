@@ -34,7 +34,7 @@ public class Repositories {
     }
     public void createMoviesTable() throws SQLException {
         try (Statement statement = getConnection().createStatement()) {
-            statement.executeUpdate(Queries.createTicketTable());
+            statement.executeUpdate(Queries.createMoviesTable());
             System.out.println("table Movies was created");
         }
     }
@@ -74,7 +74,7 @@ public class Repositories {
             try (Statement statement = getConnection().createStatement();ResultSet resultSet = statement.executeQuery(Queries.getUser(id));) {
                 if (resultSet.next()) {
                     isFound = true;
-                    userInfo(new User(resultSet.getInt("id"),resultSet.getString("username"),resultSet.getInt("age"),resultSet.getDouble("balance")));
+                    userInfo(new User(resultSet.getInt("user_id"),resultSet.getString("username"),resultSet.getInt("age"),resultSet.getDouble("balance")));
                 }else{
                     System.out.println("User wasn't found!");
                 }
@@ -84,7 +84,7 @@ public class Repositories {
         public User getUserClass(int id) throws SQLException{
             try (Statement statement = getConnection().createStatement();ResultSet resultSet = statement.executeQuery(Queries.getUser(id));) {
                 if (resultSet.next()) {
-                    return new User(resultSet.getInt("id"),resultSet.getString("username"),resultSet.getInt("age"),resultSet.getDouble("balance"));
+                    return new User(resultSet.getInt("user_id"),resultSet.getString("username"),resultSet.getInt("age"),resultSet.getDouble("balance"));
                 }else{
                     System.out.println("User wasn't found!");
                 }
@@ -94,7 +94,7 @@ public class Repositories {
         public Movie getMovieClass(int id) throws SQLException{
             try (Statement statement = getConnection().createStatement();ResultSet resultSet = statement.executeQuery(Queries.getMovie(id));) {
                 if (resultSet.next()) {
-                    return new Movie(resultSet.getInt("id"),resultSet.getString("movieName"),resultSet.getDouble("price"));
+                    return new Movie(resultSet.getInt("movie_id"),resultSet.getString("movie_name"),resultSet.getDouble("price"));
                 }else{
                     System.out.println("Movie wasn't found!");
                 }
@@ -104,7 +104,7 @@ public class Repositories {
         public Movie getMovieClassByName(String name) throws SQLException{
             try (Statement statement = getConnection().createStatement();ResultSet resultSet = statement.executeQuery(Queries.getMovieByName(name));) {
                 if (resultSet.next()) {
-                    return new Movie(resultSet.getInt("id"),resultSet.getString("movieName"),resultSet.getDouble("price"));
+                    return new Movie(resultSet.getInt("movie_id"),resultSet.getString("movie_name"),resultSet.getDouble("price"));
                 }else{
                     System.out.println("Movie wasn't found!");
                 }
@@ -114,7 +114,7 @@ public class Repositories {
         public Ticket getTicketClass(int id) throws SQLException{
             try (Statement statement = getConnection().createStatement();ResultSet resultSet = statement.executeQuery(Queries.getTicket(id));) {
                 if (resultSet.next()) {
-                    return new Ticket(resultSet.getInt("id"),resultSet.getString("movieName"),resultSet.getDouble("price"),resultSet.getString("time"),resultSet.getInt("ticketId"));
+                    return new Ticket(resultSet.getInt("ticket_id"),resultSet.getString("movie_name"),resultSet.getDouble("price"),resultSet.getString("time"),resultSet.getInt("ticketId"));
                 }else{
                     System.out.println("User wasn't found!");
                 }
@@ -150,7 +150,7 @@ public class Repositories {
             try (Statement statement = getConnection().createStatement(); ResultSet resultSet = statement.executeQuery(Queries.getAllUsers());) {
                 while (resultSet.next()) {
                     System.out.println();
-                    userInfo(new User(resultSet.getInt("id"),resultSet.getString("username"),resultSet.getInt("age"),resultSet.getDouble("balance")));
+                    userInfo(new User(resultSet.getInt("user_id"),resultSet.getString("username"),resultSet.getInt("age"),resultSet.getDouble("balance")));
                 }
             }
     }
@@ -239,7 +239,7 @@ public class Repositories {
             try (Statement statement = getConnection().createStatement(); ResultSet resultSet = statement.executeQuery(Queries.getAllTickets());) {
                 while (resultSet.next()) {
                     System.out.println();
-                    ticketInfo(new Ticket(resultSet.getInt("ticketId"),resultSet.getString("movieName"),resultSet.getDouble("balance"),resultSet.getString("time")));
+                    ticketInfo(new Ticket(resultSet.getInt("ticket_id"),resultSet.getString("movie_name"),resultSet.getDouble("balance"),resultSet.getString("time")));
                 }
             }
         }
@@ -271,7 +271,7 @@ public class Repositories {
             try (Statement statement = getConnection().createStatement();ResultSet resultSet = statement.executeQuery(Queries.getMovie(id));) {
                 if (resultSet.next()) {
                     isFound = true;
-                    movieInfo(new Movie(resultSet.getInt("id"),resultSet.getString("movieName"),resultSet.getDouble("price")));
+                    movieInfo(new Movie(resultSet.getInt("movie_id"),resultSet.getString("movie_name"),resultSet.getDouble("price")));
                 }else{
                     System.out.println("Movie wasn't found!");
                 }
@@ -284,7 +284,7 @@ public class Repositories {
             try (Statement statement = getConnection().createStatement();ResultSet resultSet = statement.executeQuery(Queries.getMovieByName(name));) {
                 if (resultSet.next()) {
                     isFound = true;
-                    movieInfo(new Movie(resultSet.getInt("id"),resultSet.getString("movieName"),resultSet.getDouble("price")));
+                    movieInfo(new Movie(resultSet.getInt("movie_id"),resultSet.getString("movie_name"),resultSet.getDouble("price")));
                 }else{
                     System.out.println("Movie wasn't found!");
                 }
@@ -319,7 +319,7 @@ public class Repositories {
             try (Statement statement = getConnection().createStatement();ResultSet resultSet = statement.executeQuery(Queries.getMovieByTime(time));) {
                 if (resultSet.next()) {
                     isFound = true;
-                    movieInfo(new Movie(resultSet.getInt("id"),resultSet.getString("movieName"),resultSet.getDouble("price")));
+                    movieInfo(new Movie(resultSet.getInt("movie_id"),resultSet.getString("movie_name"),resultSet.getDouble("price")));
                 }else{
                     System.out.println("There is not any movie at this time!");
                 }
@@ -331,7 +331,7 @@ public class Repositories {
             try (Statement statement = getConnection().createStatement(); ResultSet resultSet = statement.executeQuery(Queries.getAllMovies());) {
                 while (resultSet.next()) {
                     System.out.println();
-                    movieInfo(new Movie(resultSet.getInt("id"),resultSet.getString("movieName"),resultSet.getDouble("price")));
+                    movieInfo(new Movie(resultSet.getInt("movie_id"),resultSet.getString("movie_name"),resultSet.getDouble("price")));
                 }
             }
         }
@@ -339,8 +339,8 @@ public class Repositories {
          public double getMoviePrice (String name) throws SQLException{
             try (Statement statement = getConnection().createStatement();ResultSet resultSet = statement.executeQuery(Queries.getMoviePrice(name));) {
                 if (resultSet.next()) {
-                    Movie movie = new Movie(resultSet.getInt("id"),resultSet.getString("movieName"),resultSet.getDouble("price"));
-                    movieInfo(new Movie(resultSet.getInt("id"),resultSet.getString("movieName"),resultSet.getDouble("price")));
+                    Movie movie = new Movie(resultSet.getInt("movie_id"),resultSet.getString("movie_name"),resultSet.getDouble("price"));
+                    movieInfo(new Movie(resultSet.getInt("movie_id"),resultSet.getString("movie_name"),resultSet.getDouble("price")));
                     return movie.getPrice();
                 }else{
                     System.out.println("Movie wasn't found!");
@@ -348,9 +348,4 @@ public class Repositories {
             }
             return 0  ;
         }
-
-
-
-
-
 }
