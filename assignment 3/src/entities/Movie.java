@@ -37,7 +37,7 @@ public class Movie {
         return price;
     }
 
-    public void setGetMovieId(int MovieId) {
+    public void setMovieId(int MovieId) {
         this.MovieId = MovieId;
     }
 

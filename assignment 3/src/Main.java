@@ -39,7 +39,7 @@ public class Main {
                     break;
 
                 case 1:
-                    swichCaseForUsers(scanner,userController);
+                    swichCaseForUsers(scanner, userController);
                     break;
 
                 case 2:
@@ -74,7 +74,7 @@ public class Main {
 
     }
 
-    static public void swichCaseForUsers(Scanner scanner,UserController userController) throws SQLException{
+    static public void swichCaseForUsers(Scanner scanner, UserController userController) throws SQLException {
         printMenuForUsersOptions();
         int choice = Integer.parseInt(scanner.nextLine());
 
@@ -83,18 +83,23 @@ public class Main {
                 runCinemaApp(scanner);
                 break;
 
-            case 1: userController.addUser(scanner);
+            case 1:
+                userController.addUser(scanner);
                 break;
 
-            case 2: userController.deleteUser(scanner);
+            case 2:
+                userController.deleteUser(scanner);
                 break;
 
-            case 3: userController.updateUser(scanner);
+            case 3:
+                userController.updateUser(scanner);
                 break;
-            case 4: userController.getAllUsers();
-            break;
-            case 5 : userController.getUser(scanner);
-            break;
+            case 4:
+                userController.getAllUsers();
+                break;
+            case 5:
+                userController.getUser(scanner);
+                break;
 
         }
     }
@@ -113,20 +118,26 @@ public class Main {
         int choice = Integer.parseInt(scanner.nextLine());
 
         switch (choice) {
-            case 0: runCinemaApp(scanner);
+            case 0:
+                runCinemaApp(scanner);
                 break;
 
-            case 1: movieController.addMovie(scanner);
+            case 1:
+                movieController.addMovie(scanner);
                 break;
 
-            case 2: movieController.deleteMovie(scanner);
+            case 2:
+                movieController.deleteMovie(scanner);
                 break;
 
-            case 3: movieController.updateMovie(scanner);
+            case 3:
+                movieController.updateMovie(scanner);
                 break;
-            case 4: movieController.getAllMovies();
-            break;
-            case 5: movieController.getMovie(scanner);
+            case 4:
+                movieController.getAllMovies();
+                break;
+            case 5:
+                movieController.getMovie(scanner);
                 break;
         }
     }
@@ -134,17 +145,41 @@ public class Main {
     static public void printMenuForTicketOptions() {
         System.out.println("0.Exit");
         System.out.println("1.Add ticket to user");
+        System.out.println("2.Add new ticket");
+        System.out.println("3.Delete ticket");
+        System.out.println("4.Update ticket");
+        System.out.println("5.Show all tickets");
+        System.out.println("6.Show ticket information");
     }
 
-    static public void switchCaseForTickets(Scanner scanner, TicketController ticketController) throws  SQLException, NumberFormatException {
+    static public void switchCaseForTickets(Scanner scanner, TicketController ticketController) throws SQLException, NumberFormatException {
         printMenuForTicketOptions();
         int choice = Integer.parseInt(scanner.nextLine());
 
         switch (choice) {
-            case 0: runCinemaApp(scanner);
+            case 0:
+                runCinemaApp(scanner);
                 break;
-            case 1: ticketController.addTicketToUser(scanner);
+            case 1:
+                ticketController.addTicketToUser(scanner);
                 break;
+            case 2:
+                ticketController.addTicket(scanner);
+                break;
+            case 3:
+                ticketController.deleteTicket(scanner);
+                break;
+
+            case 4:
+                ticketController.updateTicket(scanner);
+                break;
+            case 5:
+                ticketController.getAllTickets();
+                break;
+            case 6:
+                ticketController.getTicket(scanner);
+                break;
+
             default:
                 System.out.println("Invalid choice");
         }
