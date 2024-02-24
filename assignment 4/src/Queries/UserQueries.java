@@ -41,4 +41,7 @@ public class UserQueries implements IQueries {
     public String getUserClass() {
         return "SELECT * FROM users WHERE user_id = ?";
     }
+    public String updateUserBalance() {
+        return "UPDATE users SET balance = ? WHERE user_id = ?";
+    }
 }

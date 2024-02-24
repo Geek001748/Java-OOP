@@ -82,7 +82,7 @@ public class UserRepository implements IUserRepository {
     @Override
     public User getUserClass(int id) throws SQLException {
         try (Connection conn = db.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(q.getUserClass())) {
+             PreparedStatement stmt = conn.prepareStatement(q.getById())) {
             stmt.setInt(1, id);
             try (ResultSet rs = stmt.executeQuery()) {
                 if (rs.next()) {
@@ -128,7 +128,7 @@ public class UserRepository implements IUserRepository {
             if (rowsAffected > 0) {
                 System.out.println("Deleted successfully");
             } else {
-                System.out.println("Something  went wrong");
+                System.out.println("Something went wrong");
             }
         }
     }
@@ -147,6 +147,19 @@ public class UserRepository implements IUserRepository {
                             rs.getInt("ticket_amount"));
                     System.out.println(user.toString());
                 }
+            }
+        }
+    }
+    public void updateUserBalance(User user) throws SQLException {
+        try (Connection conn = db.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(q.updateUserBalance())) {
+            stmt.setDouble(1, user.getBalance());
+            stmt.setInt(2, user.getId());
+            int rows = stmt.executeUpdate();
+            if (rows > 0) {
+                System.out.println("User balance updated successfully!");
+            } else {
+                System.out.println("Failed to update user balance.");
             }
         }
     }

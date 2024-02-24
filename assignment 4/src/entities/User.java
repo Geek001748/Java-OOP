@@ -1,8 +1,6 @@
 package entities;
 
 import entities.Ticket;
-import repositories.Repositories;
-
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Scanner;
