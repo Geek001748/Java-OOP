@@ -13,6 +13,12 @@ public class Movie {
         System.out.println("Name of movie: " + getMovieName());
         System.out.println("Genre of movie: " + getMovieGenre());
     }
+
+    public Movie(String movieName, String movieGenre) {
+        this.movieName = movieName;
+        this.movieGenre = movieGenre;
+    }
+
     public int getMovieId() {
         return MovieId;
     }
