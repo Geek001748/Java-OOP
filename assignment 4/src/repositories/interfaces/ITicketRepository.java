@@ -10,5 +10,5 @@ public interface ITicketRepository {
     boolean getTicket(int id) throws SQLException;
     void updateTicket(Ticket ticket) throws SQLException;
     void deleteTicket(int id) throws SQLException;
-    List<Ticket> getAllTickets() throws SQLException;
+    void getAllTickets() throws SQLException;
 }

@@ -1,5 +1,6 @@
 package repositories;
 
+import Queries.TicketQueries;
 import data.IDB;
 import entities.Ticket;
 import repositories.interfaces.ITicketRepository;
@@ -10,6 +11,7 @@ import java.util.List;
 
 public class TicketRepository implements ITicketRepository {
     private final IDB db;
+    private TicketQueries q;
 
     public TicketRepository(IDB db) {
         this.db = db;
@@ -18,12 +20,23 @@ public class TicketRepository implements ITicketRepository {
     @Override
     public void addTicket(Ticket ticket) throws SQLException {
         try (Connection conn = db.getConnection();
-             PreparedStatement stmt = conn.prepareStatement("INSERT INTO tickets (movie_name, price, time, ticket_amount) VALUES (?, ?, ?, ?)")) {
+             PreparedStatement stmt = conn.prepareStatement(q.add(),
+                Statement.RETURN_GENERATED_KEYS)) {
             stmt.setString(1, ticket.getMovieName());
-            stmt.setDouble(2, ticket.getTicketPrice());
-            stmt.setString(3, ticket.getTime());
-            stmt.setInt(4, ticket.getTicketAmount());
+            stmt.setString(2, ticket.getMovieGenre());
             stmt.executeUpdate();
+
+            int rowsAffected = stmt.executeUpdate();
+
+            if (rowsAffected > 0) {
+                ResultSet generatedKeys = stmt.getGeneratedKeys();
+                if (generatedKeys.next()) {
+                    ticket.setTicketId(generatedKeys.getInt(1));
+                }
+                System.out.println("Ticket added successfully!");
+            } else {
+                System.out.println("Failed to ticket user. Please try again.");
+            }
         }
     }
 
@@ -60,7 +73,7 @@ public class TicketRepository implements ITicketRepository {
     }
 
     @Override
-    public List<Ticket> getAllTickets() throws SQLException {
+    public void getAllTickets() throws SQLException {
         List<Ticket> tickets = new ArrayList<>();
         try (Connection conn = db.getConnection();
              PreparedStatement stmt = conn.prepareStatement("SELECT * FROM tickets");

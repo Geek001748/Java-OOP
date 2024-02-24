@@ -44,7 +44,7 @@ public class MovieRepository implements IMovieRepository {
     }
 
     @Override
-    public List<Movie> getAllMovies() throws SQLException {
-        return null;
+    public void getAllMovies() throws SQLException {
+        return ;
     }
 }

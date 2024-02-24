@@ -4,9 +4,8 @@ import Queries.UserQueries;
 import data.IDB;
 import entities.User;
 import repositories.interfaces.IUserRepository;
+
 import java.sql.*;
-import java.util.ArrayList;
-import java.util.List;
 
 public class UserRepository implements IUserRepository {
     private final IDB db;
@@ -19,25 +18,51 @@ public class UserRepository implements IUserRepository {
     @Override
     public void addUser(User user) throws SQLException {
         try (Connection conn = db.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(q.add())) {
+             PreparedStatement stmt = conn.prepareStatement(q.add(),
+                     Statement.RETURN_GENERATED_KEYS)) {
             stmt.setString(1, user.getUsername());
             stmt.setInt(2, user.getAge());
             stmt.setDouble(3, user.getBalance());
             stmt.setInt(4, user.getTicketAmount());
             stmt.executeUpdate();
+
+            int rowsAffected = stmt.executeUpdate();
+
+            if (rowsAffected > 0) {
+                ResultSet generatedKeys = stmt.getGeneratedKeys();
+                if (generatedKeys.next()) {
+                    user.setId(generatedKeys.getInt(1));
+                }
+                System.out.println("User added successfully!");
+            } else {
+                System.out.println("Failed to add user. Please try again.");
+            }
         }
     }
-
     @Override
     public boolean getUser(int id) throws SQLException {
         try (Connection conn = db.getConnection();
              PreparedStatement stmt = conn.prepareStatement(q.getById())) {
             stmt.setInt(1, id);
             try (ResultSet rs = stmt.executeQuery()) {
-                return rs.next();
+                if (rs.next()) {
+                    User user = new User(
+                            rs.getInt("id"),
+                            rs.getString("username"),
+                            rs.getInt("age"),
+                            rs.getDouble("balance"),
+                            rs.getInt("ticketAmount")
+                    );
+                    System.out.println(user.toString());
+                    return true;
+                } else {
+                    System.out.println("User wasn't found!");
+                }
             }
         }
+        return false;
     }
+
 
     @Override
     public int getUserTicketAmount(int userId) throws SQLException {
@@ -47,12 +72,13 @@ public class UserRepository implements IUserRepository {
             try (ResultSet rs = stmt.executeQuery()) {
                 if (rs.next()) {
                     return rs.getInt("ticket_amount");
+                } else {
+                    System.out.println("User wasn't found!");
                 }
             }
         }
         return 0;
     }
-
     @Override
     public User getUserClass(int id) throws SQLException {
         try (Connection conn = db.getConnection();
@@ -67,6 +93,8 @@ public class UserRepository implements IUserRepository {
                             rs.getDouble("balance"),
                             rs.getInt("ticket_amount")
                     );
+                } else {
+                    System.out.println("User wasn't found!");
                 }
             }
         }
@@ -82,7 +110,12 @@ public class UserRepository implements IUserRepository {
             stmt.setDouble(3, user.getBalance());
             stmt.setInt(4, user.getTicketAmount());
             stmt.setInt(5, user.getId());
-            stmt.executeUpdate();
+            int rows = stmt.executeUpdate();
+            if (rows > 0) {
+                System.out.println("User updated successfully!");
+            } else {
+                System.out.println("Failed to update user.");
+            }
         }
     }
 
@@ -91,26 +124,30 @@ public class UserRepository implements IUserRepository {
         try (Connection conn = db.getConnection();
              PreparedStatement stmt = conn.prepareStatement(q.delete())) {
             stmt.setInt(1, id);
-            stmt.executeUpdate();
+            int rowsAffected = stmt.executeUpdate();
+            if (rowsAffected > 0) {
+                System.out.println("Deleted successfully");
+            } else {
+                System.out.println("Something  went wrong");
+            }
         }
     }
 
     @Override
-    public List<User> getAllUsers() throws SQLException {
-        List<User> users = new ArrayList<>();
+    public void getAllUsers() throws SQLException {
         try (Connection conn = db.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(q.getAll());
-             ResultSet rs = stmt.executeQuery()) {
-            while (rs.next()) {
-                users.add(new User(
-                        rs.getInt("user_id"),
-                        rs.getString("username"),
-                        rs.getInt("age"),
-                        rs.getDouble("balance"),
-                        rs.getInt("ticket_amount")
-                ));
+             PreparedStatement stmt = conn.prepareStatement(q.getAll())) {
+            try (ResultSet rs = stmt.executeQuery()) {
+                while (rs.next()) {
+                    User user = new User(
+                            rs.getInt("user_id"),
+                            rs.getString("username"),
+                            rs.getInt("age"),
+                            rs.getDouble("balance"),
+                            rs.getInt("ticket_amount"));
+                    System.out.println(user.toString());
+                }
             }
         }
-        return users;
     }
 }
