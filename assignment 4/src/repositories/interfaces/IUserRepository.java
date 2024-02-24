@@ -12,5 +12,5 @@ public interface IUserRepository {
     User getUserClass(int id) throws SQLException;
     void updateUser(User user) throws SQLException;
     void deleteUser(int id) throws SQLException;
-    List<User> getAllUsers() throws SQLException;
+    void getAllUsers() throws SQLException;
 }
