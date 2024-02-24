@@ -26,10 +26,38 @@ public class MovieRepository implements IMovieRepository {
               PreparedStatement stmt = conn.prepareStatement(q.add())) {
             stmt.setString(1, movie.getMovieName());
             stmt.setString(2, movie.getMovieGenre());
-            stmt.executeUpdate();
+             int rowsAffected = stmt.executeUpdate();
+             if (rowsAffected > 0) {
+                ResultSet generatedKeys = stmt.getGeneratedKeys();
+                if (generatedKeys.next()) {
+                    movie.setMovieId(generatedKeys.getInt(1));
+                }
+                System.out.println("Movie added successfully!");
+            } else {
+                System.out.println("Failed to add movie. Please try again.");
+            }
         }
 
 
+    }
+
+
+    @Override
+    public Movie getMovieClass(int id) throws SQLException {
+         try (Connection conn = db.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(q.getById())) {
+            stmt.setInt(1, id);
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) {
+                    Movie movie = new Movie (
+                            rs.getString("movie_name"),
+                            rs.getString("movie_genre"));
+                } else {
+                    System.out.println("Movie wasn't found!");
+                }
+            }
+        }
+        return null;
     }
 
     @Override
@@ -40,9 +68,9 @@ public class MovieRepository implements IMovieRepository {
             try (ResultSet rs = stmt.executeQuery()) {
                  if (rs.next()) {
                 Movie movie = new Movie(
-                        rs.getInt("Movieid"),
-                        rs.getString("movieName"),
-                        rs.getString("movieGenre")
+                        rs.getInt("movie_id"),
+                        rs.getString("movie_name"),
+                        rs.getString("movie_genre")
                 );
                 System.out.println(movie.toString()); // Print movie details using toString()
                 return true;
@@ -53,43 +81,55 @@ public class MovieRepository implements IMovieRepository {
             }
         } return false;
     }
-
-    @Override
-    public Movie getMovieByName(String name) throws SQLException {
-   try (Statement statement = db.getConnection().createStatement(); ResultSet resultSet = statement.executeQuery(MovieQueries.getMovieByName(name));) {
-                if (resultSet.next()) {
-                    return new Movie(resultSet.getInt("movie_id"),resultSet.getString("movie_name"),resultSet.getString("movie_genre"));
-                }else{
-                    System.out.println("Movie wasn't found!");
-                }
-            }
-            return null;
-
-
-    }
-
-    @Override
-    public Movie getMovieClass(int id) throws SQLException {
-        return null;
-    }
-
-    @Override
-    public Movie getMovieClassByName(String name) throws SQLException {
-        return null;
-    }
-
     @Override
     public void updateMovie(Movie movie) throws SQLException {
+        try (Connection conn = db.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(q.update())) {
+            stmt.setString(1, movie.getMovieName());
+            stmt.setString(2, movie.getMovieGenre());
+
+
+            int rows = stmt.executeUpdate();
+            if (rows > 0) {
+                System.out.println("Movie updated successfully!");
+            } else {
+                System.out.println("Failed to update user.");
+            }
+        }
 
     }
 
     @Override
     public void deleteMovie(int id) throws SQLException {
+         try (Connection conn = db.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(q.delete())) {
+            stmt.setInt(1, id);
+            int rowsAffected = stmt.executeUpdate();
+            if (rowsAffected > 0) {
+                System.out.println("Deleted successfully");
+            } else {
+                System.out.println("Something  went wrong");
+            }
+        }
+
 
     }
 
     @Override
     public void getAllMovies() throws SQLException {
-        return ;
+           try (Connection conn = db.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(q.getAll())) {
+            try (ResultSet rs = stmt.executeQuery()) {
+                while (rs.next()) {
+                    Movie movie = new Movie(
+                        rs.getInt("movie_id"),
+                        rs.getString("movie_name"),
+                        rs.getString("movie_genre")
+                );
+                System.out.println(movie.toString()); // Print movie details using toString()
+                }
+            }
+        }
+
     }
 }
