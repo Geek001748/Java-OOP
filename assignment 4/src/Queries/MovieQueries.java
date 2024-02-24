@@ -11,8 +11,10 @@ public class MovieQueries implements IQueries {
 
     @Override
     public String add() {
-        return "INSERT INTO movies (movie_name, movie_genre, price) VALUES (?, ?)";
+        return "INSERT INTO movies (movie_name, movie_genre) VALUES ( ?, ?)";
     }
+
+    public String getMovieByName (){ return "SELECT * FROM movies WHERE movie_name = ?" ;}
 
     @Override
     public String update() {
