@@ -10,7 +10,7 @@ public class TicketQueries implements IQueries {
 
     @Override
     public String add() {
-        return "INSERT INTO tickets (movie_name, ticket_price) VALUES (?, ?)";
+        return "INSERT INTO tickets (ticket_price) VALUES (?)";
     }
 
     @Override
