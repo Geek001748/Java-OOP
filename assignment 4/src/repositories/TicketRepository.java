@@ -1,6 +1,7 @@
 package repositories;
 
 import Queries.TicketQueries;
+import data.DB;
 import data.IDB;
 import entities.Ticket;
 import repositories.interfaces.ITicketRepository;
@@ -8,20 +9,43 @@ import repositories.interfaces.ITicketRepository;
 import java.sql.*;
 
 public class TicketRepository implements ITicketRepository {
-    private final IDB db;
-    private TicketQueries q;
+    private IDB db = new DB();
+    private final TicketQueries q = new TicketQueries();
 
     public TicketRepository(IDB db) {
         this.db = db;
     }
+    public TicketRepository() {
 
+    }
     @Override
     public void addTicket(Ticket ticket) throws SQLException {
         try (Connection conn = db.getConnection();
              PreparedStatement stmt = conn.prepareStatement(q.add(),
                 Statement.RETURN_GENERATED_KEYS)) {
             stmt.setDouble(1, ticket.getTicketPrice());
-            stmt.executeUpdate();
+            stmt.setInt(2, ticket.getMovieId()); // Set movie genre
+
+            int rowsAffected = stmt.executeUpdate();
+
+            if (rowsAffected > 0) {
+                ResultSet generatedKeys = stmt.getGeneratedKeys();
+                if (generatedKeys.next()) {
+                    ticket.setTicketId(generatedKeys.getInt(1));
+                }
+                System.out.println("Ticket added successfully!");
+            } else {
+                System.out.println("Failed to ticket user. Please try again.");
+            }
+        }
+    }
+    public void addTicketToUser(Ticket ticket) throws SQLException {
+        try (Connection conn = db.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(q.addToUser(),
+                Statement.RETURN_GENERATED_KEYS)) {
+            stmt.setDouble(1, ticket.getTicketPrice());
+            stmt.setInt(2, ticket.getUserId());
+            stmt.setInt(3, ticket.getMovieId());
 
             int rowsAffected = stmt.executeUpdate();
 
@@ -107,8 +131,8 @@ public class TicketRepository implements ITicketRepository {
             try (ResultSet rs = stmt.executeQuery()) {
                 if (rs.next()) {
                     return new Ticket(
-                            rs.getInt("ticket_id"),
-                            rs.getInt("ticket_price")
+                            rs.getInt("ticket_price"),
+                            rs.getInt("ticket_id")
                     );
                 } else {
                     System.out.println("Ticket wasn't found!");

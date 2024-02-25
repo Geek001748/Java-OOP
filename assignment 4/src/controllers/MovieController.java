@@ -1,109 +1,105 @@
 package controllers;
 
 import entities.Movie;
-import entities.Ticket;
-import repositories.Repositories;
+import repositories.MovieRepository;
 
 import java.sql.SQLException;
 import java.util.Scanner;
 
 public class MovieController {
-    private TicketController ticketController;
-    private Repositories movieRepository;
+    private final MovieRepository movieRepository;
+    private final Scanner scanner;
 
-    public MovieController(Repositories userRepository) {
-        this.movieRepository = userRepository;
+    public MovieController(MovieRepository movieRepository) {
+        this.movieRepository = movieRepository;
+        this.scanner = new Scanner(System.in);
     }
 
-    public boolean isCorrectTime(String time) {
-        try {
-            if (time.length() > 5) {
-                System.out.println("Too many words");
-                return false;
+    public void start() {
+        while (true) {
+            System.out.println("Movie Management System");
+            System.out.println("0. Exit");
+            System.out.println("1. Add Movie");
+            System.out.println("2. Update Movie");
+            System.out.println("3. Delete Movie");
+            System.out.println("4. Get Movie by ID");
+            System.out.println("5. View All Movies");
+            System.out.print("Enter your choice: ");
+
+            int choice = scanner.nextInt();
+            scanner.nextLine(); // Consume newline
+
+            try {
+                switch (choice) {
+                    case 0:
+                        System.out.println("Exiting...");
+                        return;
+                    case 1:
+                        addMovie();
+                        break;
+                    case 2:
+                        updateMovie();
+                        break;
+                    case 3:
+                        deleteMovie();
+                        break;
+                    case 4:
+                        getMovieById();
+                        break;
+                    case 5:
+                        viewAllMovies();
+                        break;
+                    default:
+                        System.out.println("Invalid choice. Please try again.");
+                }
+            } catch (SQLException e) {
+                System.out.println("Error: " + e.getMessage());
             }
-            if (time.charAt(2) != '-') {
-                System.out.println("Don't forget about '-'");
-                return false;
-            }
-            int hours = Integer.parseInt(time.substring(0, 2));
-            int minutes = Integer.parseInt(time.substring(3));
-            if (hours < 0 && hours > 23 || minutes < 0 || minutes > 59) {
-                System.out.println("Wrong Input");
-            }
-        } catch (NumberFormatException e) {
-            return false;
         }
-        return true;
     }
 
-    public void addMovie(Scanner scanner) throws SQLException {
-        System.out.print("Enter movie name: ");
+    private void addMovie() throws SQLException {
+        System.out.println("Enter movie name:");
         String movieName = scanner.nextLine();
-        System.out.print("Enter price: ");
-        double price = Double.parseDouble(scanner.nextLine());
-        movieRepository.addMovie(new Movie(movieName, price));
 
-        System.out.println("How many tickets you want to add?(0-100)");
-        int ticketAmount;
-        do {
-            ticketAmount = Integer.parseInt(scanner.nextLine());
-            if (ticketAmount > 0 && ticketAmount <= 100) {
-                break;
-            }
-            System.out.println("You have written incorrect number. (0-100)");
-        } while (true);
-        System.out.println("Enter movie time (xx:xx)");
-        String time;
+        System.out.println("Enter movie genre:");
+        String movieGenre = scanner.nextLine();
 
-        do {
-            time = scanner.nextLine();
-            if (isCorrectTime(time)) {
-                movieRepository.addTicketToTable(new Ticket(movieName.toLowerCase(), price, time, ticketAmount));
-                break;
-            }
-        } while (true);
-
+        Movie movie = new Movie(movieName, movieGenre);
+        movieRepository.addMovie(movie);
     }
 
-    public void updateMovie(Scanner scanner) throws SQLException {
-        System.out.println("Enter the id to update");
-        int id = Integer.parseInt(scanner.nextLine());
-        if (movieRepository.getMovie(id)) {
-            System.out.println("Enter the movie name to update: ");
-            String movieName = scanner.nextLine();
+    private void updateMovie() throws SQLException {
+        System.out.println("Enter movie ID:");
+        int id = scanner.nextInt();
+        scanner.nextLine(); // Consume newline
 
-            System.out.println("Enter the price to update: ");
-            double price = Double.parseDouble(scanner.nextLine());
+        System.out.println("Enter new movie name:");
+        String movieName = scanner.nextLine();
 
-            movieRepository.updateMovie(new Movie(id, movieName, price));
+        System.out.println("Enter new movie genre:");
+        String movieGenre = scanner.nextLine();
+
+        Movie movie = new Movie(id, movieName, movieGenre);
+        movieRepository.updateMovie(movie);
+    }
+
+    private void deleteMovie() throws SQLException {
+        System.out.println("Enter movie ID:");
+        int id = scanner.nextInt();
+        movieRepository.deleteMovie(id);
+    }
+
+    private void getMovieById() throws SQLException {
+        System.out.println("Enter movie ID:");
+        int id = scanner.nextInt();
+        boolean found = movieRepository.getMovie(id);
+        if (!found) {
+            System.out.println("Movie not found!");
         }
     }
 
-    public void deleteMovie(Scanner scanner) throws SQLException {
-        System.out.println("Enter the id to delete");
-        int id = Integer.parseInt(scanner.nextLine());
-        if (movieRepository.getMovie(id)) {
-            movieRepository.deleteMovie(id);
-        }
-    }
-
-    public void getMovie(Scanner scanner) throws SQLException {
-        Scanner sc = new Scanner(System.in);
-        System.out.println("Enter id of movie");
-        int id = sc.nextInt();
-        movieRepository.getMovie(id);
-    }
-
-    public void getMovieByName(Scanner scanner) throws SQLException {
-        Scanner sc = new Scanner(System.in);
-        System.out.println("Enter name of movie");
-        String name = sc.nextLine();
-        movieRepository.getMovieByName(name);
-    }
-
-
-    public void getAllMovies() throws SQLException {
+    private void viewAllMovies() throws SQLException {
         movieRepository.getAllMovies();
     }
-
 }

@@ -1,25 +1,14 @@
-package entities;
+package entities.userFunc;
 
 import entities.Ticket;
-import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.Scanner;
-
-public class User {
+public class User implements Purchasable {
     private int id;
     private String username = "Unknown";
     private int age = 0;
-    private double balance =0.0;
+    private double balance = 0.0;
     private int ticketAmount = 0;
 
-
-    public User() {
-        this.id = id;
-        this.username = username;
-        this.age = age;
-        this.balance = balance;
-        this.ticketAmount = ticketAmount;
-    }
+    public User() {}
 
     public User(int id, String username, int age, double balance, int ticketAmount) {
         this.id = id;
@@ -36,6 +25,12 @@ public class User {
         this.balance = balance;
     }
 
+    public User(String username, int age, double balance) {
+        this.username = username;
+        this.age = age;
+        this.balance = balance;
+    }
+
     public int getTicketAmount() {
         return ticketAmount;
     }
@@ -43,13 +38,6 @@ public class User {
     public void setTicketAmount(int ticketAmount) {
         this.ticketAmount = ticketAmount;
     }
-
-    public User(String username, int age, double balance) {
-        this.username = username;
-        this.age = age;
-        this.balance = balance;
-    }
-
 
     public int getId() {
         return id;
@@ -82,9 +70,25 @@ public class User {
     public void setBalance(double balance) {
         this.balance = balance;
     }
+
+    public void topUpBalance(double amount) {
+        balance += amount;
+    }
+
+    @Override
+    public boolean buyTicket(double ticketPrice) {
+        if (balance >= ticketPrice) {
+            balance -= ticketPrice;
+            ticketAmount++;
+            return true;
+        } else {
+            System.out.println("Insufficient balance to buy the ticket.");
+            return false;
+        }
+    }
+
     @Override
     public String toString() {
         return "Username: " + getUsername() + "\nAge : " + getAge() + "\nBalance: " + getBalance();
     }
 }
-

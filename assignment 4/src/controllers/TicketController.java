@@ -57,10 +57,18 @@ public class TicketController {
     private void addTicket() throws SQLException {
         System.out.println("Enter ticket price:");
         double price = scanner.nextDouble();
+        scanner.nextLine(); // Consume newline
 
-        Ticket ticket = new Ticket(price);
+        System.out.println("Enter id of the user:");
+        int userId = Integer.parseInt(scanner.nextLine());
+
+        System.out.println("Enter id of the movie:");
+        int movieId = Integer.parseInt(scanner.nextLine());
+
+        Ticket ticket = new Ticket(price, userId, movieId);
         ticketRepository.addTicket(ticket);
     }
+
 
     private void updateTicket() throws SQLException {
         System.out.println("Enter ticket ID:");

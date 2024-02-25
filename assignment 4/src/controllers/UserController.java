@@ -1,6 +1,8 @@
 package controllers;
 
-import entities.User;
+import entities.Ticket;
+import entities.userFunc.User;
+import repositories.TicketRepository;
 import repositories.UserRepository;
 
 import java.sql.SQLException;
@@ -8,6 +10,7 @@ import java.util.Scanner;
 
 public class UserController {
     private final UserRepository userRepository;
+    private final TicketRepository ticketRepository = new TicketRepository();
     private final Scanner scanner;
 
     public UserController(UserRepository userRepository) {
@@ -23,6 +26,10 @@ public class UserController {
             System.out.println("2. Update User");
             System.out.println("3. Delete User");
             System.out.println("4. Get User by ID");
+            System.out.println("5. Top up balance");
+            System.out.println("6. Buy Ticket");
+            System.out.println("7. Get All Users with Tickets");
+            System.out.println("8. Get User by ID with Tickets");
             System.out.print("Enter your choice: ");
 
             int choice = scanner.nextInt();
@@ -44,6 +51,18 @@ public class UserController {
                         break;
                     case 4:
                         getUserById();
+                        break;
+                    case 5:
+                        topUpBalance();
+                        break;
+                    case 6:
+                        buyTicket();
+                        break;
+                    case 7:
+                        getAllUsersWithTickets();
+                        break;
+                    case 8:
+                        getUserByIdWithTickets();
                         break;
                     default:
                         System.out.println("Invalid choice. Please try again.");
@@ -102,4 +121,43 @@ public class UserController {
             System.out.println("User not found!");
         }
     }
+
+    private void topUpBalance() throws SQLException {
+        System.out.println("Enter user ID:");
+        int userId = scanner.nextInt();
+        System.out.println("Enter amount to top up:");
+        double amount = scanner.nextDouble();
+        userRepository.topUpBalance(amount, userId);
+    }
+
+    private void buyTicket() throws SQLException {
+        System.out.println("Enter user ID:");
+        int userId = scanner.nextInt();
+        System.out.println("Enter ticket ID:");
+        int ticketId = scanner.nextInt();
+
+        if(ticketRepository.getTicket(ticketId)) {
+
+            scanner.nextLine(); // Consume newline
+
+            System.out.println("Enter ticket amount:");
+            int amount = scanner.nextInt();
+            Ticket ticketInTable = ticketRepository.getTicketClass(ticketId);
+            Ticket ticketForUser = new Ticket(ticketInTable.getTicketPrice(), userId, 0);
+            userRepository.buyTicket(amount, ticketForUser);
+        } else {
+            System.out.println("Ticket wasn't found!");
+        }
+    }
+
+    private void getAllUsersWithTickets() throws SQLException {
+        userRepository.getAllUsersInTable();
+    }
+
+    private void getUserByIdWithTickets() throws SQLException {
+        System.out.println("Enter user ID:");
+        int id = scanner.nextInt();
+        userRepository.getUserByIdInTable(id);
+    }
+
 }
