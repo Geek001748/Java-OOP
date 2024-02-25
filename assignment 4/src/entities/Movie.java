@@ -4,16 +4,14 @@ public class Movie {
     private int MovieId;
     private String movieName;
     private String movieGenre;
+    public Movie(){
+
+    }
     public Movie(int MovieId, String movieName, String movieGenre) {
         this.MovieId = MovieId;
         this.movieName = movieName;
         this.movieGenre = movieGenre;
     }
-    public Movie(){
-        System.out.println("Name of movie: " + getMovieName());
-        System.out.println("Genre of movie: " + getMovieGenre());
-    }
-
     public Movie(String movieName, String movieGenre) {
         this.movieName = movieName;
         this.movieGenre = movieGenre;

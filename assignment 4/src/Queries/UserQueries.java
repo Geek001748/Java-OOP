@@ -41,7 +41,23 @@ public class UserQueries implements IQueries {
     public String getUserClass() {
         return "SELECT * FROM users WHERE user_id = ?";
     }
-    public String updateUserBalance() {
-        return "UPDATE users SET balance = ? WHERE user_id = ?";
+    public String topUpBalance() {
+        return "UPDATE users SET balance = balance + ? WHERE user_id = ?";
+    }
+    public String getAllInTable() {
+        return "SELECT users.*, COUNT(tickets.ticket_id) AS ticket_count, movies.movie_name " +
+               "FROM users " +
+               "LEFT JOIN tickets ON users.user_id = tickets.user_id " +
+               "LEFT JOIN movies ON tickets.movie_id = movies.movie_id " +
+               "GROUP BY users.user_id, movies.movie_name";
+    }
+
+    public String getByIdInTable() {
+        return "SELECT users.*, COUNT(tickets.ticket_id) AS ticket_count, movies.movie_name " +
+               "FROM users " +
+               "LEFT JOIN tickets ON users.user_id = tickets.user_id " +
+               "LEFT JOIN movies ON tickets.movie_id = movies.movie_id " +
+               "WHERE users.user_id = ? " +
+               "GROUP BY users.user_id, movies.movie_name";
     }
 }

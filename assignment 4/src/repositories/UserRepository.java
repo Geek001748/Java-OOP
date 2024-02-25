@@ -1,20 +1,23 @@
 package repositories;
 
+import Queries.TicketQueries;
 import Queries.UserQueries;
 import data.IDB;
-import entities.User;
+import entities.Ticket;
+import entities.userFunc.User;
 import repositories.interfaces.IUserRepository;
 
 import java.sql.*;
 
 public class UserRepository implements IUserRepository {
     private final IDB db;
-    private UserQueries q;
+    private final UserQueries q;
+    private final TicketQueries tq = new TicketQueries();
 
     public UserRepository(IDB db) {
         this.db = db;
+        this.q = new UserQueries(); // Initialize UserQueries
     }
-
     @Override
     public void addUser(User user) throws SQLException {
         try (Connection conn = db.getConnection();
@@ -150,17 +153,94 @@ public class UserRepository implements IUserRepository {
             }
         }
     }
-    public void updateUserBalance(User user) throws SQLException {
+    public void topUpBalance(double amount, int userId) throws SQLException {
         try (Connection conn = db.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(q.updateUserBalance())) {
-            stmt.setDouble(1, user.getBalance());
-            stmt.setInt(2, user.getId());
+             PreparedStatement stmt = conn.prepareStatement(q.topUpBalance())) {
+            stmt.setDouble(1, amount);
+            stmt.setInt(2, userId);
             int rows = stmt.executeUpdate();
             if (rows > 0) {
-                System.out.println("User balance updated successfully!");
+                System.out.println("User balance topped up successfully!");
             } else {
-                System.out.println("Failed to update user balance.");
+                System.out.println("Failed to top up user balance.");
             }
         }
+    }
+
+    public void buyTicket(int amount, Ticket ticket) throws SQLException {
+    double totalPrice = ticket.getTicketPrice() * amount;
+
+    // Get user's balance
+    User user = getUserClass(ticket.getUserId());
+    double balance = user.getBalance();
+
+    // Check if user has sufficient balance
+    if (balance >= totalPrice) {
+        try (Connection conn = db.getConnection();
+             PreparedStatement buyStmt = conn.prepareStatement(tq.addToUser());
+             PreparedStatement updateStmt = conn.prepareStatement(q.update())) {
+
+            // Proceed with the purchase
+            buyStmt.setInt(1, amount + user.getTicketAmount());
+            buyStmt.setInt(2, ticket.getUserId());
+            int rows = buyStmt.executeUpdate();
+
+            if (rows > 0) {
+                // Update user's balance and ticket count
+                user.setBalance(balance - totalPrice);
+                user.setTicketAmount(user.getTicketAmount() + amount);
+                updateStmt.setString(1, user.getUsername());
+                updateStmt.setInt(2, user.getAge());
+                updateStmt.setDouble(3, user.getBalance());
+                updateStmt.setInt(4, user.getTicketAmount());
+                updateStmt.setInt(5, user.getId());
+                updateStmt.executeUpdate();
+
+                System.out.println("Ticket purchased successfully!");
+            } else {
+                System.out.println("Failed to purchase ticket.");
+            }
+        }
+    } else {
+        System.out.println("Insufficient balance to buy the tickets.");
+    }
+}
+
+    public void getAllUsersInTable() throws SQLException {
+        try (Connection conn = db.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(q.getAllInTable());
+             ResultSet rs = stmt.executeQuery()) {
+            while (rs.next()) {
+                User user = extractUserFromResultSet(rs);
+                int ticketCount = rs.getInt("ticket_count");
+                String movieName = rs.getString("movie_name");
+                System.out.println(user.toString() + " | Ticket Count: " + ticketCount + " | Movie: " + movieName);
+            }
+        }
+    }
+
+    public void getUserByIdInTable(int userId) throws SQLException {
+        try (Connection conn = db.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(q.getByIdInTable())) {
+            stmt.setInt(1, userId);
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) {
+                    User user = extractUserFromResultSet(rs);
+                    int ticketCount = rs.getInt("ticket_count");
+                    String movieName = rs.getString("movie_name");
+                    System.out.println(user.toString() + " | Ticket Count: " + ticketCount + " | Movie: " + movieName);
+                } else {
+                    System.out.println("User not found!");
+                }
+            }
+        }
+    }
+    private User extractUserFromResultSet(ResultSet rs) throws SQLException {
+        return new User(
+                rs.getInt("user_id"),
+                rs.getString("username"),
+                rs.getInt("age"),
+                rs.getDouble("balance"),
+                rs.getInt("ticket_amount"));
     }
 }

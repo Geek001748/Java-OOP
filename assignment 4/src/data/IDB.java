@@ -4,4 +4,5 @@ import java.sql.SQLException;
 
 public interface IDB {
     Connection getConnection() throws SQLException;
+    void executeUpdate(String query) throws SQLException;
 }

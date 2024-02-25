@@ -1,9 +1,8 @@
 package repositories.interfaces;
 
-import entities.User;
+import entities.userFunc.User;
 
 import java.sql.SQLException;
-import java.util.List;
 
 public interface IUserRepository {
     void addUser(User user) throws SQLException;
