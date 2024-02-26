@@ -1,4 +1,4 @@
-package entities;
+package entities.movies;
 
 public class Movie {
     private int MovieId;

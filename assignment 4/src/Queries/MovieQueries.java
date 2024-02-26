@@ -6,19 +6,20 @@ public class MovieQueries implements IQueries {
         return "CREATE TABLE IF NOT EXISTS movies ("
                 + "movie_id SERIAL PRIMARY KEY,"
                 + "movie_name VARCHAR(50) NOT NULL,"
-                + "movie_genre VARCHAR(50) NOT NULL)";
+                + "movie_genre VARCHAR(50) NOT NULL)"
+                + "movie_promotion_percent DOUBLE PRECISION NOT NULL";
     }
 
     @Override
     public String add() {
-        return "INSERT INTO movies (movie_name, movie_genre) VALUES ( ?, ?)";
+        return "INSERT INTO movies (movie_name, movie_genre, movie_promotion_percent) VALUES ( ?, ?, ?)";
     }
 
     public String getMovieByName (){ return "SELECT * FROM movies WHERE movie_name = ?" ;}
 
     @Override
     public String update() {
-        return "UPDATE movies SET movie_name = ?,movie_genre = ?, price = ? WHERE movie_id = ?";
+        return "UPDATE movies SET movie_name = ?,movie_genre = ?, movie_promotion_percent = ? WHERE movie_id = ?";
     }
 
     @Override

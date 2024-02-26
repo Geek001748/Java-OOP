@@ -1,6 +1,6 @@
 package entities;
 
-import java.util.Scanner;
+import entities.movies.Movie;
 
 public class Ticket extends Movie {
     private int ticketId = 0;
