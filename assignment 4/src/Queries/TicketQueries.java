@@ -19,7 +19,7 @@ public class TicketQueries implements IQueries {
         return "INSERT INTO tickets (ticket_price, movie_id) VALUES (?, ?)";
     }
     public String addToUser() {
-        return "UPDATE users SET ticket_amount = ? WHERE user_id = ?";
+        return "UPDATE users SET ticket_amount = ticket_amount + ? WHERE user_id = ?";
     }
     @Override
     public String update() {

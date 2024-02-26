@@ -36,6 +36,6 @@ public class Melodrama extends Movie{
 
     @Override
     public String toString() {
-        return "Movie ID: " + getMovieName() + "\nMovie name: " + getMovieName() + "\nMovie genre: " + getMovieGenre()+"\nMovie promotion percent" + getPromotionProcent();
+        return "Movie ID: " + getMovieName() + "\nMovie name: " + getMovieName() + "\nMovie genre: " + getMovieGenre()+"\nMovie promotion price: " + getPromotionProcent();
     }
 }

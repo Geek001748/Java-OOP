@@ -4,23 +4,25 @@ import java.util.Scanner;
 import Queries.MovieQueries;
 import Queries.TicketQueries;
 import Queries.UserQueries;
-import controllers.MovieController;
-import controllers.TicketController;
-import controllers.UserController;
 import data.DB;
 import data.IDB;
 import repositories.MovieRepository;
 import repositories.TicketRepository;
 import repositories.UserRepository;
+import controllers.MovieController;
+import controllers.TicketController;
+import controllers.UserController;
 
 public class Main {
     public static void main(String[] args) {
         try {
             IDB db = initializeDatabase();
 
-            createTables(db);
-
-            manageSystems(db);
+            if (createTables(db)) {
+                manageSystems(db);
+            } else {
+                System.out.println("Failed to create tables. Exiting...");
+            }
         } catch (SQLException e) {
             System.out.println("Failed to initialize application: " + e.getMessage());
         }
@@ -30,19 +32,17 @@ public class Main {
         return DB.getInstance();
     }
 
-    private static void createTables(IDB db) {
+    private static boolean createTables(IDB db) {
         try {
-            createTable(db, new TicketQueries().createTable());
-            createTable(db, new UserQueries().createTable());
-            createTable(db, new MovieQueries().createTable());
+            db.executeUpdate(new UserQueries().createTable());
+            db.executeUpdate(new MovieQueries().createTable());
+            db.executeUpdate(new TicketQueries().createTable());
             System.out.println("Tables created successfully.");
+            return true;
         } catch (SQLException e) {
             System.out.println("Failed to create tables: " + e.getMessage());
+            return false;
         }
-    }
-
-    private static void createTable(IDB db, String query) throws SQLException {
-        db.executeUpdate(query);
     }
 
     private static void manageSystems(IDB db) {

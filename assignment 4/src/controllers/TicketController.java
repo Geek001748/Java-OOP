@@ -59,13 +59,15 @@ public class TicketController {
         double price = scanner.nextDouble();
         scanner.nextLine(); // Consume newline
 
-        System.out.println("Enter id of the user:");
-        int userId = Integer.parseInt(scanner.nextLine());
-
         System.out.println("Enter id of the movie:");
         int movieId = Integer.parseInt(scanner.nextLine());
 
-        Ticket ticket = new Ticket(price, userId, movieId);
+        // Create Ticket object using TicketBuilder
+        Ticket ticket = new Ticket.TicketBuilder()
+                .ticketPrice(price)
+                .movieId(movieId)
+                .build();
+
         ticketRepository.addTicket(ticket);
     }
 
@@ -78,7 +80,10 @@ public class TicketController {
         System.out.println("Enter new ticket price:");
         double price = scanner.nextDouble();
 
-        Ticket ticket = new Ticket(id, price);
+        Ticket ticket = new Ticket.TicketBuilder()
+                .ticketId(id)
+                .ticketPrice(price)
+                .build();
         ticketRepository.updateTicket(ticket);
     }
 

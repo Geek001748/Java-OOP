@@ -37,6 +37,7 @@ public class UserRepository implements IUserRepository {
                     user.setId(generatedKeys.getInt(1));
                 }
                 System.out.println("User added successfully!");
+                System.out.println(user.toString());
             } else {
                 System.out.println("Failed to add user. Please try again.");
             }
@@ -112,9 +113,11 @@ public class UserRepository implements IUserRepository {
             stmt.setInt(2, user.getAge());
             stmt.setDouble(3, user.getBalance());
             stmt.setInt(4, user.getTicketAmount());
-            stmt.setInt(5, user.getId());
+            stmt.setBoolean(5, user.isPremium());
+            stmt.setInt(6, user.getId());
             int rows = stmt.executeUpdate();
             if (rows > 0) {
+                System.out.println(user.toString());
                 System.out.println("User updated successfully!");
             } else {
                 System.out.println("Failed to update user.");
@@ -193,7 +196,8 @@ public class UserRepository implements IUserRepository {
                 updateStmt.setInt(2, user.getAge());
                 updateStmt.setDouble(3, user.getBalance());
                 updateStmt.setInt(4, user.getTicketAmount());
-                updateStmt.setInt(5, user.getId());
+                updateStmt.setBoolean(5, user.isPremium());
+                updateStmt.setInt(6, user.getId());
                 updateStmt.executeUpdate();
 
                 System.out.println("Ticket purchased successfully!");
