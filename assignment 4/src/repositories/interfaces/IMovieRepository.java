@@ -1,9 +1,8 @@
 package repositories.interfaces;
 
-import entities.Movie;
+import entities.movies.Movie;
 
 import java.sql.SQLException;
-import java.util.List;
 
 public interface IMovieRepository {
     void addMovie(Movie movie) throws SQLException;

@@ -1,6 +1,8 @@
 package controllers;
 
-import entities.Movie;
+import entities.movies.Comedy;
+import entities.movies.Melodrama;
+import entities.movies.Movie;
 import repositories.MovieRepository;
 
 import java.sql.SQLException;
@@ -24,6 +26,7 @@ public class MovieController {
             System.out.println("3. Delete Movie");
             System.out.println("4. Get Movie by ID");
             System.out.println("5. View All Movies");
+            System.out.println("6.View promotions using genre");
             System.out.print("Enter your choice: ");
 
             int choice = scanner.nextInt();
@@ -49,6 +52,9 @@ public class MovieController {
                     case 5:
                         viewAllMovies();
                         break;
+                    case 6:
+                        promotionsUsingGenre();
+                        break;
                     default:
                         System.out.println("Invalid choice. Please try again.");
                 }
@@ -65,8 +71,15 @@ public class MovieController {
         System.out.println("Enter movie genre:");
         String movieGenre = scanner.nextLine();
 
-        Movie movie = new Movie(movieName, movieGenre);
-        movieRepository.addMovie(movie);
+        if (movieGenre.equals("melodrama")){
+            Movie movie = new Melodrama(movieName, movieGenre);
+            movieRepository.addMovie(movie);
+        }
+        else{
+            Movie movie = new Comedy(movieName,movieGenre);
+            movieRepository.addMovie(movie);
+        }
+
     }
 
     private void updateMovie() throws SQLException {
@@ -80,8 +93,19 @@ public class MovieController {
         System.out.println("Enter new movie genre:");
         String movieGenre = scanner.nextLine();
 
-        Movie movie = new Movie(id, movieName, movieGenre);
-        movieRepository.updateMovie(movie);
+//        System.out.println("Enter movie promotion percent");
+//        Double percent = scanner.nextDouble();
+
+        if(movieGenre.equals("melodrama")){
+             Movie movie = new Melodrama(id, movieName, movieGenre);
+             movieRepository.updateMovie(movie);
+        }
+        if(movieGenre.equals("comedy")){
+             Movie movie = new Comedy(id, movieName, movieGenre);
+             movieRepository.updateMovie(movie);
+        }
+
+
     }
 
     private void deleteMovie() throws SQLException {
@@ -97,6 +121,10 @@ public class MovieController {
         if (!found) {
             System.out.println("Movie not found!");
         }
+    }
+
+    private void promotionsUsingGenre(){
+
     }
 
     private void viewAllMovies() throws SQLException {
