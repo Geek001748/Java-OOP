@@ -8,7 +8,8 @@ public class UserQueries implements IQueries {
                 + "username VARCHAR(50) NOT NULL,"
                 + "age INT NOT NULL,"
                 + "balance DOUBLE PRECISION NOT NULL,"
-                + "ticket_amount INT NOT NULL )";
+                + "ticket_amount INT NOT NULL,"
+                + "premium BOOLEAN DEFAULT FALSE )";
     }
 
     @Override
@@ -18,7 +19,7 @@ public class UserQueries implements IQueries {
 
     @Override
     public String update() {
-        return "UPDATE users SET username = ?, age = ?, balance = ?, ticket_amount = ? WHERE user_id = ?";
+        return "UPDATE users SET username = ?, age = ?, balance = ?, ticket_amount = ?, premium = ? WHERE user_id = ?";
     }
 
     @Override

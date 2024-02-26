@@ -1,73 +1,72 @@
 package entities;
 
-import entities.movies.Movie;
+public class Ticket {
+    private final int ticketId;
+    private final int userId;
+    private final int movieId;
+    private final double ticketPrice;
 
-public class Ticket extends Movie {
-    private int ticketId = 0;
-    private int userId = 0;
-    private int movieId = 0;
-    private double ticketPrice = 0;
-
-    public void setUserId(int userId) {
+    private Ticket(int ticketId, int userId, int movieId, double ticketPrice) {
+        this.ticketId = ticketId;
         this.userId = userId;
-    }
-
-    @Override
-    public void setMovieId(int movieId) {
         this.movieId = movieId;
-    }
-
-    @Override
-    public int getMovieId() {
-        return movieId;
-    }
-    public Ticket(int ticketId, double ticketPrice) {
-        this.ticketId = ticketId;
-        this.ticketPrice = ticketPrice;
-    }
-    public Ticket(double ticketPrice, int userId, int movieId) {
-        this.ticketPrice = ticketPrice;
-        this.userId = userId;
-    }
-
-    public Ticket(double ticketPrice) {
         this.ticketPrice = ticketPrice;
     }
 
-    public Ticket(int MovieId, String movieName, String movieGenre, int ticketId, double ticketPrice) {
-        super(MovieId, movieName, movieGenre);
-        this.ticketId = ticketId;
-        this.ticketPrice = ticketPrice;
-    }
-
-    public Ticket(double ticketPrice, String movieName, String movieGenre) {
-        super(movieName, movieGenre);
-        this.ticketPrice = ticketPrice;
-    }
-
-
-    public double getTicketPrice() {
-        return ticketPrice;
-    }
-
-    public void setTicketPrice(double ticketPrice) {
-        this.ticketPrice = ticketPrice;
-    }
-
+    // Getters for fields
     public int getTicketId() {
         return ticketId;
-    }
-
-    public void setTicketId(int ticketId) {
-        this.ticketId = ticketId;
     }
 
     public int getUserId() {
         return userId;
     }
 
+    public int getMovieId() {
+        return movieId;
+    }
+
+    public double getTicketPrice() {
+        return ticketPrice;
+    }
+
+    // Builder pattern
+    public static class TicketBuilder {
+        private int ticketId;
+        private int userId;
+        private int movieId;
+        private double ticketPrice;
+
+        public TicketBuilder() {
+        }
+
+        public TicketBuilder ticketId(int ticketId) {
+            this.ticketId = ticketId;
+            return this;
+        }
+
+        public TicketBuilder userId(int userId) {
+            this.userId = userId;
+            return this;
+        }
+
+        public TicketBuilder movieId(int movieId) {
+            this.movieId = movieId;
+            return this;
+        }
+
+        public TicketBuilder ticketPrice(double ticketPrice) {
+            this.ticketPrice = ticketPrice;
+            return this;
+        }
+
+        public Ticket build() {
+            return new Ticket(ticketId, userId, movieId, ticketPrice);
+        }
+    }
+
     @Override
     public String toString() {
-        return "Ticket ID: " + getTicketId() + "\nTicket price: " + getTicketPrice();
+        return "Ticket ID: " + ticketId + "\nTicket price: " + ticketPrice;
     }
 }

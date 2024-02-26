@@ -123,9 +123,16 @@ public class MovieController {
         }
     }
 
-    private void promotionsUsingGenre(){
+    private void promotionsUsingGenre() throws SQLException {
+    Scanner scanner = new Scanner(System.in);
 
-    }
+    System.out.println("Enter genre (melodrama or comedy):");
+    String genre = scanner.nextLine().toLowerCase();
+
+    System.out.println("Movies with promotions for genre " + genre + ":");
+    movieRepository.getMoviesWithPromotion(genre);
+}
+
 
     private void viewAllMovies() throws SQLException {
         movieRepository.getAllMovies();

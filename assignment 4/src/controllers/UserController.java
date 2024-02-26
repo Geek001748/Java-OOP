@@ -30,6 +30,7 @@ public class UserController {
             System.out.println("6. Buy Ticket");
             System.out.println("7. Get All Users with Tickets");
             System.out.println("8. Get User by ID with Tickets");
+            System.out.println("9. Upgrade to premium");
             System.out.print("Enter your choice: ");
 
             int choice = scanner.nextInt();
@@ -64,6 +65,9 @@ public class UserController {
                     case 8:
                         getUserByIdWithTickets();
                         break;
+                    case 9:
+                        upgradeUserToPremium();
+                        break;
                     default:
                         System.out.println("Invalid choice. Please try again.");
                 }
@@ -83,7 +87,13 @@ public class UserController {
         System.out.println("Enter balance:");
         double balance = scanner.nextDouble();
 
-        User user = new User(username, age, balance);
+        // Use the UserBuilder to create a User object
+        User user = new User.UserBuilder(1) // Pass a default id for now
+                .username(username)
+                .age(age)
+                .balance(balance)
+                .build();
+
         userRepository.addUser(user);
     }
 
@@ -101,7 +111,13 @@ public class UserController {
         System.out.println("Enter new balance:");
         double balance = scanner.nextDouble();
 
-        User user = new User(id, username, age, balance);
+        // Use the UserBuilder to create a User object
+        User user = new User.UserBuilder(id)
+                .username(username)
+                .age(age)
+                .balance(balance)
+                .build();
+
         userRepository.updateUser(user);
     }
 
@@ -136,14 +152,19 @@ public class UserController {
         System.out.println("Enter ticket ID:");
         int ticketId = scanner.nextInt();
 
-        if(ticketRepository.getTicket(ticketId)) {
+        if (ticketRepository.getTicket(ticketId)) {
 
             scanner.nextLine(); // Consume newline
 
             System.out.println("Enter ticket amount:");
             int amount = scanner.nextInt();
+
+            // Create Ticket object using TicketRepository
             Ticket ticketInTable = ticketRepository.getTicketClass(ticketId);
-            Ticket ticketForUser = new Ticket(ticketInTable.getTicketPrice(), userId, 0);
+            Ticket ticketForUser = new Ticket.TicketBuilder()
+                    .ticketPrice(ticketInTable.getTicketPrice())
+                    .userId(userId)
+                    .build();
             userRepository.buyTicket(amount, ticketForUser);
         } else {
             System.out.println("Ticket wasn't found!");
@@ -158,6 +179,24 @@ public class UserController {
         System.out.println("Enter user ID:");
         int id = scanner.nextInt();
         userRepository.getUserByIdInTable(id);
+    }
+
+    public void upgradeUserToPremium() throws SQLException {
+        System.out.println("Write user id: ");
+        int userId = scanner.nextInt();
+        User user = userRepository.getUserClass(userId);
+        if (user != null) {
+            if (user.getBalance() >= 50) {
+                user.setBalance(user.getBalance() - 50); // Deduct $50 for premium
+                user.upgradeToPremium(); // Upgrade user to premium
+                userRepository.updateUser(user);
+                System.out.println("User upgraded to premium successfully!");
+            } else {
+                System.out.println("Insufficient balance to upgrade to premium.");
+            }
+        } else {
+            System.out.println("User not found!");
+        }
     }
 
 }

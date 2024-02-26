@@ -15,29 +15,25 @@ import java.sql.SQLException;
 public class MovieRepository implements IMovieRepository {
 
     private final IDB db;
-
-
-    private final MovieQueries q;
+    private final MovieQueries query;
 
     public MovieRepository(IDB db) {
         this.db = db;
-        this.q = new MovieQueries(); // Initialize MovieQueries
+        this.query = new MovieQueries();
     }
 
     @Override
     public void addMovie(Movie movie) throws SQLException {
-        String query = q.add();
+        String addQuery = query.add();
         try (Connection conn = db.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(query, PreparedStatement.RETURN_GENERATED_KEYS)) {
+             PreparedStatement stmt = conn.prepareStatement(addQuery, PreparedStatement.RETURN_GENERATED_KEYS)) {
             stmt.setString(1, movie.getMovieName());
             stmt.setString(2, movie.getMovieGenre());
-            if (movie.getMovieGenre().equals("melodrama")){
-            stmt.setDouble(3,30);
+            if (movie.getMovieGenre().equals("melodrama")) {
+                stmt.setDouble(3, 30);
+            } else if (movie.getMovieGenre().equals("comedy")) {
+                stmt.setDouble(3, 50);
             }
-            if (movie.getMovieGenre().equals("comedy")){
-            stmt.setDouble(3,50);
-            }
-
 
             int rowsAffected = stmt.executeUpdate();
             if (rowsAffected > 0) {
@@ -54,10 +50,34 @@ public class MovieRepository implements IMovieRepository {
     }
 
     @Override
-    public Movie getMovieClass(int id) throws SQLException {
-        String query = q.getById();
+    public boolean getMovie(int id) throws SQLException {
+        String getQuery = query.getById();
         try (Connection conn = db.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(query)) {
+             PreparedStatement stmt = conn.prepareStatement(getQuery)) {
+            stmt.setInt(1, id);
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) {
+                    Movie movie;
+                    if (rs.getString("movie_genre").equals("melodrama")) {
+                        movie = new Melodrama(rs.getInt("movie_id"), rs.getString("movie_name"), rs.getString("movie_genre"), rs.getDouble("movie_promotion_percent"));
+                    } else {
+                        movie = new Comedy(rs.getInt("movie_id"), rs.getString("movie_name"), rs.getString("movie_genre"), rs.getDouble("movie_promotion_percent"));
+                    }
+                    System.out.println(movie.toString());
+                    return true;
+                } else {
+                    System.out.println("Movie was not found");
+                }
+            }
+        }
+        return false;
+    }
+
+    @Override
+    public Movie getMovieClass(int id) throws SQLException {
+        String getQuery = query.getById();
+        try (Connection conn = db.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(getQuery)) {
             stmt.setInt(1, id);
             try (ResultSet rs = stmt.executeQuery()) {
                 if (rs.next()) {
@@ -70,47 +90,17 @@ public class MovieRepository implements IMovieRepository {
         return null;
     }
 
-    @Override
-    public boolean getMovie(int id) throws SQLException {
-        String query = q.getById();
-        try (Connection conn = db.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(query)) {
-            stmt.setInt(1, id);
-            try (ResultSet rs = stmt.executeQuery()) {
-                if (rs.next()) {
-                    if(rs.getString("movie_genre").equals("melodrama")){
-                        Movie movie = new Melodrama(rs.getInt("movie_id"), rs.getString("movie_name"), rs.getString("movie_genre"),rs.getDouble("movie_promotion_percent"));
-
-                    System.out.println(movie.toString());
-                    }else{
-                        Movie movie = new Comedy(rs.getInt("movie_id"), rs.getString("movie_name"), rs.getString("movie_genre"),rs.getDouble("movie_promotion_percent"));
-
-                    System.out.println(movie.toString());
-                    }
-                    return true;
-                } else {
-                    System.out.println("Movie was not found");
-                }
-            }
-        }
-        return false;
-    }
 
     @Override
     public void updateMovie(Movie movie) throws SQLException {
-        String query = q.update();
+        String updateQuery = query.update();
         try (Connection conn = db.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(query)) {
+             PreparedStatement stmt = conn.prepareStatement(updateQuery)) {
             stmt.setString(1, movie.getMovieName());
             stmt.setString(2, movie.getMovieGenre());
             stmt.setInt(4, movie.getMovieId());
-            if(movie.getMovieGenre().equals("melodrama")){
-               stmt.setInt(3, 30);
-            }
-             if(movie.getMovieGenre().equals("comedy")){
-               stmt.setInt(3, 50);
-            }
-
+            int promotionPercent = (movie.getMovieGenre().equals("melodrama")) ? 30 : 50;
+            stmt.setInt(3, promotionPercent);
 
             int rowsAffected = stmt.executeUpdate();
             if (rowsAffected > 0) {
@@ -123,9 +113,9 @@ public class MovieRepository implements IMovieRepository {
 
     @Override
     public void deleteMovie(int id) throws SQLException {
-        String query = q.delete();
+        String deleteQuery = query.delete();
         try (Connection conn = db.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(query)) {
+             PreparedStatement stmt = conn.prepareStatement(deleteQuery)) {
             stmt.setInt(1, id);
             int rowsAffected = stmt.executeUpdate();
             if (rowsAffected > 0) {
@@ -134,57 +124,43 @@ public class MovieRepository implements IMovieRepository {
                 System.out.println("Something went wrong");
             }
         }
-
-
-    }
-
-    public boolean getUserByIdInTable(int id) throws SQLException {
-        try (Connection conn = db.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(q.getById())) {
-            stmt.setInt(1, id);
-            try (ResultSet rs = stmt.executeQuery()) {
-                if (rs.next()) {
-                   return true;
-                } else {
-                    return false;
-                }
-            }
-        }
     }
 
     @Override
     public void getAllMovies() throws SQLException {
-        String query = q.getAll();
+        String getAllQuery = query.getAll();
         try (Connection conn = db.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(query);
+             PreparedStatement stmt = conn.prepareStatement(getAllQuery);
              ResultSet rs = stmt.executeQuery()) {
             while (rs.next()) {
-                if(rs.getString("movie_genre").equals("melodrama")){
-                    Movie movie = new Melodrama(rs.getInt("movie_id"), rs.getString("movie_name"), rs.getString("movie_genre"),rs.getDouble("movie_promotion_percent"));
-                    System.out.println(movie.toString());
+                Movie movie;
+                if (rs.getString("movie_genre").equals("melodrama")) {
+                    movie = new Melodrama(rs.getInt("movie_id"), rs.getString("movie_name"), rs.getString("movie_genre"), rs.getDouble("movie_promotion_percent"));
+                } else {
+                    movie = new Comedy(rs.getInt("movie_id"), rs.getString("movie_name"), rs.getString("movie_genre"), rs.getDouble("movie_promotion_percent"));
                 }
-                if(rs.getString("movie_genre").equals("comedy")){
-                    Movie movie = new Comedy(rs.getInt("movie_id"), rs.getString("movie_name"), rs.getString("movie_genre"),rs.getDouble("movie_promotion_percent"));
-                    System.out.println(movie.toString());
-                }
-
+                System.out.println(movie.toString());
             }
         }
     }
 
-       public void getAllMovies2() throws SQLException {
-        MovieFactory movieFactory = new MovieFactory();
-        String query = q.getAll();
+    public void getMoviesWithPromotion(String genre) throws SQLException {
+        String getPromotionQuery = query.getAllMoviesWithPromotionByGenre();
         try (Connection conn = db.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(query);
-             ResultSet rs = stmt.executeQuery()) {
-            while (rs.next()) {
-               int id= rs.getInt("movie_id");
-               String name = rs.getString("movie_name");
-               String genre = rs.getString("movie_genre");
-               double percent = rs.getDouble("movie_promotion_percent");
-               Movie movie = movieFactory.createMovie(id,name,genre,percent);
-               movie.toString();
+             PreparedStatement stmt = conn.prepareStatement(getPromotionQuery)) {
+            stmt.setString(1, genre);
+            try (ResultSet rs = stmt.executeQuery()) {
+                while (rs.next()) {
+                    Movie movie;
+                    if (genre.equalsIgnoreCase("melodrama")) {
+                        movie = new Melodrama(rs.getInt("movie_id"), rs.getString("movie_name"), rs.getString("movie_genre"), rs.getDouble("movie_promotion_percent"));
+                    } else if (genre.equalsIgnoreCase("comedy")) {
+                        movie = new Comedy(rs.getInt("movie_id"), rs.getString("movie_name"), rs.getString("movie_genre"), rs.getDouble("movie_promotion_percent"));
+                    } else {
+                        movie = new Movie(rs.getInt("movie_id"), rs.getString("movie_name"), rs.getString("movie_genre"));
+                    }
+                    System.out.println(movie.toString());
+                }
             }
         }
     }

@@ -1,16 +1,12 @@
 package entities.userFunc;
 
-import entities.Ticket;
-import repositories.TicketRepository;
-
-import java.sql.SQLException;
-
 public class VIPUser extends User {
     private static final double DISCOUNT_PERCENTAGE = 0.3;
 
-    public VIPUser(int id, String username, int age, double balance) {
-        super(id, username, age, balance, 0); // VIP users start with 0 tickets
+    public VIPUser(UserBuilder builder) {
+        super(builder);
     }
+
     @Override
     public boolean buyTicket(double ticketPrice) {
         double discountedPrice = ticketPrice * (1 - DISCOUNT_PERCENTAGE);

@@ -1,14 +1,70 @@
 package entities.userFunc;
 
 import entities.Ticket;
+
 public class User implements Purchasable {
     private int id;
-    private String username = "Unknown";
-    private int age = 0;
-    private double balance = 0.0;
-    private int ticketAmount = 0;
+    private String username;
+    private int age;
+    private double balance;
+    private int ticketAmount;
+    private boolean premium;
 
-    public User() {}
+    User(UserBuilder builder) {
+        this.id = builder.id;
+        this.username = builder.username;
+        this.age = builder.age;
+        this.balance = builder.balance;
+        this.ticketAmount = builder.ticketAmount;
+        this.premium = builder.premium;
+    }
+
+    // Getter methods...
+
+    public static class UserBuilder {
+        private int id;
+        private String username = "Unknown";
+        private int age = 0;
+        private double balance = 0.0;
+        private int ticketAmount = 0;
+        private boolean premium = false;
+
+        public UserBuilder(int id) {
+            this.id = id;
+        }
+
+        public UserBuilder username(String username) {
+            this.username = username;
+            return this;
+        }
+
+        public UserBuilder age(int age) {
+            this.age = age;
+            return this;
+        }
+
+        public UserBuilder balance(double balance) {
+            this.balance = balance;
+            return this;
+        }
+
+        public UserBuilder ticketAmount(int ticketAmount) {
+            this.ticketAmount = ticketAmount;
+            return this;
+        }
+
+        public UserBuilder premium(boolean premium) {
+            this.premium = premium;
+            return this;
+        }
+
+        public User build() {
+            return new User(this);
+        }
+    }
+
+    public User() {
+    }
 
     public User(int id, String username, int age, double balance, int ticketAmount) {
         this.id = id;
@@ -75,6 +131,27 @@ public class User implements Purchasable {
         balance += amount;
     }
 
+    public void setPremium(boolean premium) {
+        this.premium = premium;
+    }
+
+    public void upgradeToPremium() {
+        if (!premium) {
+            this.premium = true;
+            System.out.println("Congratulations! You are now a premium user.");
+            System.out.println("Enjoy exclusive benefits and discounts.");
+        }
+    }
+
+
+    public String getPremium() {
+        if (this.premium) {
+            return "This is VIP user";
+        } else {
+            return "This is not VIP user";
+        }
+    }
+
     @Override
     public boolean buyTicket(double ticketPrice) {
         if (balance >= ticketPrice) {
@@ -87,8 +164,15 @@ public class User implements Purchasable {
         }
     }
 
+    public boolean isPremium() {
+        return premium;
+    }
+
     @Override
     public String toString() {
-        return "Username: " + getUsername() + "\nAge : " + getAge() + "\nBalance: " + getBalance();
+        return "Username: " + getUsername()
+                + "\nAge : " + getAge()
+                + "\nBalance: " + getBalance()
+                + "\nPremium: " + getPremium();
     }
 }
